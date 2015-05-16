@@ -20,12 +20,9 @@ ProtoMedia::~ProtoMedia()
 void ProtoMedia::subscribe(IProtoNode *protoNode, const QSet<CommandType> &supportedCommands)
 {
     Q_ASSERT(protoNode);
-    auto commandItBegin = supportedCommands.constBegin();
-    auto commandItEnd = supportedCommands.constEnd();
-
-    for (auto commandIt = commandItBegin; commandIt != commandItEnd; ++commandIt)
+    for (auto command: supportedCommands)
     {
-        m_nodes.insert(*commandIt, protoNode);
+        m_nodes.insert(command, protoNode);
     }
 }
 

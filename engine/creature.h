@@ -1,12 +1,34 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
+#include "QRect"
 
 class Creature
 {
 public:
-    Creature();
-    ~Creature();
+    class CreatureState{
+        QPoint m_pos;
+        QPointF m_transPos;
+        double m_angle;
+        double m_vel;
+        double m_alt;
+        double m_age;
+        double m_mileage;
+    };
+
+public:
+    Creature(const QPoint &startPoint, const QPointF &startPointF, double maxAge, double maxVelocity, double maxAlt);
+    virtual ~Creature();
+public:
+    virtual QRectF getBBox() const = 0; // depends on cell size
+    void advance();
+protected:
+
+    CreatureState m_state;
+    double m_maxVel;
+    double m_maxAlt;
+    double m_maxAge;
+    QUuid m_uid;
 };
 
 #endif // CREATURE_H

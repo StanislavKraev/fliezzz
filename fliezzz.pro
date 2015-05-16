@@ -17,17 +17,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
     engine/creature.cpp \
     engine/creatureai.cpp \
-    engine/creaturemanager.cpp \
     engine/field.cpp \
     engine/gamemanager.cpp \
     proto/protomedia.cpp \
     ui/mainwindow.cpp \
-    proto/iprotonode.cpp
+    proto/iprotonode.cpp \
+    engine/fly.cpp \
+    engine/flyai.cpp \
+    engine/igamedataprovider.cpp
 
 HEADERS  += mainwindow.h \
     engine/creature.h \
     engine/creatureai.h \
-    engine/creaturemanager.h \
     engine/field.h \
     engine/gamemanager.h \
     proto/protomedia.h \
@@ -35,7 +36,11 @@ HEADERS  += mainwindow.h \
     proto/iprotonode.h \
     proto/commandtype.h \
     proto/iprotomedia.h \
-    proto/commanddata.h
+    proto/commanddata.h \
+    engine/fly.h \
+    engine/flyai.h \
+    engine/igamedataprovider.h \
+    engine/movedirection.h
 
 FORMS    += ui/mainwindow.ui
 
