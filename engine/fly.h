@@ -11,8 +11,8 @@ class IGameDataProvider;
 class Fly: public Creature
 {
 public:
-    Fly(QObject *parent, const QPoint &startPoint, const QPointF &startPointF,
-        double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, IGameDataProvider *gameDataProvider);
+    Fly(IGameDataProvider *gameDataProvider, const QPoint &startPoint, const QPointF &startPointF,
+        double maxAge, double maxVelocity, double maxAlt, double maxThinkTime);
     virtual ~Fly();
     virtual QRectF getBBox() const;
     virtual int getState() const;

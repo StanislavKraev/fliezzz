@@ -23,7 +23,8 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     m_maxThinkTime(maxThinkTime),
     m_choosenMove(MoveDirection::MdUnknown),
     m_targetSpot(0, 0),
-    m_targetSpotPart(0., 0.)
+    m_targetSpotPart(0., 0.),
+    m_dt(0.)
 {
     m_fsm = new QStateMachine();
 
@@ -63,19 +64,19 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     QObject::connect(deadState, SIGNAL(entered()), this, SLOT(onDeadEnter()));
 
     m_fsm->setInitialState(thinkingState);
-    QSignalTransition *trans = new QSignalTransition(this, SIGNAL(advanceSignal(double)));
+    QSignalTransition *trans = new QSignalTransition(this, SIGNAL(advanceSignal()));
     thinkingState->addTransition(trans);
     QObject::connect(trans, SIGNAL(triggered()), this, SLOT(advanceThinking()));
 
-    QSignalTransition *transFlying = new QSignalTransition(this, SIGNAL(advanceSignal(double)));
+    QSignalTransition *transFlying = new QSignalTransition(this, SIGNAL(advanceSignal()));
     flyingState->addTransition(transFlying);
     QObject::connect(transFlying, SIGNAL(triggered()), this, SLOT(advanceFlying()));
 
-    QSignalTransition *transLanding = new QSignalTransition(this, SIGNAL(advanceSignal(double)));
+    QSignalTransition *transLanding = new QSignalTransition(this, SIGNAL(advanceSignal()));
     landingState->addTransition(transLanding);
     QObject::connect(transLanding, SIGNAL(triggered()), this, SLOT(advanceLanding()));
 
-    QSignalTransition *transFalling = new QSignalTransition(this, SIGNAL(advanceSignal(double)));
+    QSignalTransition *transFalling = new QSignalTransition(this, SIGNAL(advanceSignal()));
     fallingState->addTransition(transFalling);
     QObject::connect(transFalling, SIGNAL(triggered()), this, SLOT(advanceFalling()));
 }
@@ -102,12 +103,14 @@ void FlyAI::advance(double time, Creature::CreatureState &newState)
     }
 
     m_curTime = time;
-    emit advanceSignal(dt);
+    m_dt = dt;
+    emit advanceSignal();
     newState=m_state;
 }
 
-void FlyAI::advanceThinking(double dt)
+void FlyAI::advanceThinking()
 {
+    double dt = m_dt;
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)
     {
@@ -158,8 +161,9 @@ void FlyAI::advanceThinking(double dt)
     }
 }
 
-void FlyAI::advanceFlying(double dt)
+void FlyAI::advanceFlying()
 {
+    double dt = m_dt;
     m_flyingDuration += dt;
 
     double s = m_flyingDuration * m_state.m_vel;
@@ -191,8 +195,9 @@ void FlyAI::advanceFlying(double dt)
     }
 }
 
-void FlyAI::advanceLanding(double dt)
+void FlyAI::advanceLanding()
 {
+    double dt = m_dt;
     m_flyingDuration += dt;
 
     double s = m_flyingDuration * m_state.m_vel;
@@ -222,8 +227,9 @@ void FlyAI::advanceLanding(double dt)
     }
 }
 
-void FlyAI::advanceFalling(double dt)
+void FlyAI::advanceFalling()
 {
+    double dt = m_dt;
     m_state.m_vel -= m_maxVelocity * 0.01 * dt;
     if (m_state.m_vel < 0.)
     {

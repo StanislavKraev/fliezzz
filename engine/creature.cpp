@@ -1,10 +1,12 @@
+#include "engine/creatureai.h"
+
 #include "creature.h"
 
-Creature::Creature(QObject *parent, const QPoint &startPoint, const QPointF &startPointF,
+Creature::Creature(const QPoint &startPoint, const QPointF &startPointF,
                    double maxAge, double maxVelocity, double maxAlt, CreatureAI *ai):
-    QThread(parent), m_state(startPoint, startPointF, 0., 0., 0., 0., 0.),
+    m_state(startPoint, startPointF, 0., 0., 0., 0., 0.),
     m_maxVel(maxVelocity), m_maxAlt(maxAlt), m_maxAge(maxAge), m_uid(QUuid::createUuid()),
-    m_ai(ai), m_shouldStop(false)
+    m_ai(ai), m_shouldStop(false), m_time(0.)
 {
     Q_ASSERT(m_ai);
 }
@@ -13,8 +15,9 @@ Creature::~Creature()
 {
 }
 
-void Creature::advance()
+void Creature::advance(double time)
 {
+    m_time = time;
     m_advanceMutex.unlock();
 }
 
@@ -28,9 +31,9 @@ void Creature::run()
             return;
         }
 
-        // todo: - get dt = now - last_timestamp.
-        // todo: - calculate new state using AI and dt
-        // todo: - during state calculation get game data from gamemanager cache
+        Creature::CreatureState newState;
+        this->m_ai->advance(m_time, newState);
+        m_state = newState;
     }
 }
 

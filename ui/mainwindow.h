@@ -27,6 +27,7 @@ public:
 private slots:
     void onStartStop();
     void tick();
+    void onAddFly1();
 private:
     void onGameState(const CommandData &data);
 private:

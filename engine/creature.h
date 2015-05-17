@@ -27,7 +27,7 @@ public:
     };
 
 public:
-    Creature(QObject *parent, const QPoint &startPoint, const QPointF &startPointF,
+    Creature(const QPoint &startPoint, const QPointF &startPointF,
              double maxAge, double maxVelocity, double maxAlt, CreatureAI *ai);
     virtual ~Creature();
 public:
@@ -38,7 +38,7 @@ public:
 public:
     QUuid getUid() const;
     QPointF getPosition() const;
-    void advance();
+    void advance(double time);
     void run();
     void kill();
 protected:
@@ -50,6 +50,7 @@ protected:
     CreatureAI *m_ai;
     QMutex m_advanceMutex;
     bool m_shouldStop;
+    double m_time;
 };
 
 #endif // CREATURE_H

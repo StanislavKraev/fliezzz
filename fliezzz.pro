@@ -25,7 +25,11 @@ SOURCES += main.cpp\
     engine/fly.cpp \
     engine/flyai.cpp \
     engine/igamedataprovider.cpp \
-    proto/customexceptions.cpp
+    proto/customexceptions.cpp \
+    engine/landingspot.cpp \
+    engine/spotpart.cpp \
+    engine/rectanglespotpart.cpp \
+    engine/trianglespotpart.cpp
 
 HEADERS  += mainwindow.h \
     engine/creature.h \
@@ -43,7 +47,11 @@ HEADERS  += mainwindow.h \
     engine/igamedataprovider.h \
     engine/movedirection.h \
     engine/gamestatus.h \
-    proto/customexceptions.h
+    proto/customexceptions.h \
+    engine/landingspot.h \
+    engine/spotpart.h \
+    engine/rectanglespotpart.h \
+    engine/trianglespotpart.h
 
 FORMS    += ui/mainwindow.ui
 

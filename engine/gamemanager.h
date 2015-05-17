@@ -3,6 +3,7 @@
 
 #include <QSet>
 #include <QThread>
+#include <QVector>
 
 #include "engine/igamedataprovider.h"
 #include "engine/gamestatus.h"
@@ -10,6 +11,7 @@
 
 class IProtoMedia;
 class Creature;
+class LandingSpot;
 
 class GameManager: public QThread, public IProtoNode, public IGameDataProvider
 {
@@ -42,6 +44,7 @@ protected:
     virtual QPoint getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const;
 private:
     void getGameState(CommandData &data) const;
+    void reinitField();
 private:
     QList<Creature*> m_creatures;
     IProtoMedia *m_protoMedia;
@@ -53,6 +56,8 @@ private:
 
     GameStatus m_status;
     bool m_shouldExit;
+    QVector<LandingSpot*> m_field;
+    double m_startTime;
 };
 
 #endif // GAMEMANAGER_H

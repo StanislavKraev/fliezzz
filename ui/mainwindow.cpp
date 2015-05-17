@@ -29,6 +29,7 @@ MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
     ui->setupUi(this);
     m_knownCommands.insert(CommandType::CtGameState);
 
+    connect(ui->m_addFlyBtn, SIGNAL(clicked()), this, SLOT(onAddFly1()));
     connect(ui->m_startStopBtn, SIGNAL(clicked()), this, SLOT(onStartStop()));
     m_timer = new QTimer();
     connect(m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -78,4 +79,16 @@ void MainWindow::onGameState(const CommandData &data)
     {
         ui->m_startStopBtn->setText("start");
     }
+}
+
+void MainWindow::onAddFly1()
+{
+    CommandData data;
+    data.append(QVariant("fly"));
+    data.append(QVariant(QPoint(2, 2)));
+    data.append(QVariant(60.));
+    data.append(QVariant(0.1));
+    data.append(QVariant(0.01));
+    data.append(QVariant(3.));
+    m_protoMedia->postCommand(CommandType::CtAddCreature, data);
 }

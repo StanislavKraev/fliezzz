@@ -21,10 +21,10 @@ public:
 public:
     virtual void advance(double time, Creature::CreatureState &newState);
 private slots:
-    void advanceThinking(double dt);
-    void advanceFlying(double dt);
-    void advanceLanding(double dt);
-    void advanceFalling(double dt);
+    void advanceThinking();
+    void advanceFlying();
+    void advanceLanding();
+    void advanceFalling();
 
     void onFlyingEnter();
     void onFallingEnter();
@@ -37,7 +37,7 @@ signals:
     void almostArrived();
     void landed();
     void thinkTimeout();
-    void advanceSignal(double dt);
+    void advanceSignal();
     void stopped();
 private:
     QStateMachine *m_fsm;
@@ -50,6 +50,8 @@ private:
     QPoint m_targetSpot;
     QPointF m_targetSpotPart;
     QPointF m_takeOffPt;
+
+    double m_dt;
 };
 
 #endif // FLYAI_H
