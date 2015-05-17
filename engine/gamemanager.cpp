@@ -6,21 +6,16 @@
 #include "engine/fly.h"
 #include "engine/gamemanager.h"
 
-GameManager::GameManager(IProtoMedia *protoMedia):
-    m_protoMedia(protoMedia), m_timer(nullptr), m_status(GameStatus::GsStopped)
+GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
+    QThread(parent), m_protoMedia(protoMedia), m_status(GameStatus::GsStopped), m_shouldExit(false)
 {
     Q_ASSERT(protoMedia);
 
-    QSet<CommandType> knownCommands = {CommandType::CtStartGame, CommandType::CtStopGame};
-    m_protoMedia->subscribe(this, knownCommands);
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(tick()));
+    m_knownCommands = {CommandType::CtStartGame, CommandType::CtStopGame}; // todo: debug
 }
 
 GameManager::~GameManager()
 {
-    delete m_timer;
-    m_protoMedia->unsubscribe(this);
 }
 
 bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
@@ -28,64 +23,70 @@ bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
     switch(ctype)
     {
     case CommandType::CtStartGame:
-        start();
+        onStart();
         break;
     case CommandType::CtStopGame:
-        stop();
+        onStop();
         break;
     case CommandType::CtGetGameState:
-        this->getStatus();
+        onGetStatus();
         break;
     case CommandType::CtAddCreature:
-        this->addCreature(data);
+        onAddCreature(data);
     default:
         return false;
     }
     return true;
 }
 
-void GameManager::start()
+void GameManager::onStart()
 {
     qDebug() << "Game start";
-    m_timer->start(GameManager::TimerDelay);
     m_status = GameStatus::GsStarted;
 }
 
-void GameManager::stop()
+void GameManager::onStop()
 {
-    m_timer->stop();
     m_status = GameStatus::GsStopped;
     qDebug() << "Game stop";
 }
 
-void GameManager::getStatus() const
+void GameManager::onGetStatus() const
 {
     CommandData data;
     data.append(QVariant(m_status));
-    m_protoMedia->handleCommand(CommandType::CtGameState, data);
+    m_protoMedia->postCommand(CommandType::CtGameState, data);
 }
 
-void GameManager::changeConfig()
+void GameManager::onChangeConfig()
 {
 
 }
 
-void GameManager::tick()
+void GameManager::run()
 {
-    //qDebug() << "tick";
-    CommandData gameState;
-    this->getGameState(gameState);
-    m_protoMedia->handleCommand(CommandType::CtGameData, gameState);
-
-    for (auto fly: m_creatures)
+    while (!m_shouldExit)
     {
-        fly->advance();
+        qDebug() << "tick";
+        CommandData gameState;
+        this->getGameState(gameState);
+        m_protoMedia->postCommand(CommandType::CtGameData, gameState);
+
+        if (m_status == GameStatus::GsStarted)
+        {
+            for (auto fly: m_creatures)
+            {
+                fly->advance();
+            }
+        }
+
+        m_protoMedia->canProcess(this, m_knownCommands);
+        msleep(GameManager::CycleDelay);
     }
 }
 
-void GameManager::addCreature(const CommandData &data)
+void GameManager::onAddCreature(const CommandData &data)
 {
-    // TODO: sync
     if (data.count() != 4)
     {
         throw new InvalidProtocol();

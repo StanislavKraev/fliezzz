@@ -1,7 +1,8 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
-#include <QTimer>
+#include <QSet>
+#include <QThread>
 
 #include "engine/igamedataprovider.h"
 #include "engine/gamestatus.h"
@@ -10,24 +11,25 @@
 class IProtoMedia;
 class Creature;
 
-// todo: move to separate thread
-class GameManager: public QObject, public IProtoNode, public IGameDataProvider
+class GameManager: public QThread, public IProtoNode, public IGameDataProvider
 {
     Q_OBJECT
 public:
-    GameManager(IProtoMedia *protoMedia);
+    GameManager(QObject *parent, IProtoMedia *protoMedia);
     virtual ~GameManager();
 public:
-    static const int TimerDelay = 100;
+    static const int CycleDelay = 100;
 protected:
     GameManager(const GameManager &);
     GameManager& operator=(const GameManager&);
+public:
+    void run();
 protected:
-    void start();
-    void stop();
-    void getStatus() const;
-    void changeConfig();
-    void addCreature(const CommandData &data);
+    void onStart();
+    void onStop();
+    void onGetStatus() const;
+    void onChangeConfig();
+    void onAddCreature(const CommandData &data);
 protected:
     virtual bool handleCommand(CommandType ctype, const CommandData &data);
 
@@ -37,8 +39,6 @@ protected:
     virtual QPointF getFreeLandingPoint(const QPoint &pt) const;
     virtual bool isLandingPointFree(const QPointF &pt) const;
     virtual QUuid getCreatureAt(const QPointF &pt) const;
-private slots:
-    void tick();
 private:
     void getGameState(CommandData &data) const;
 private:
@@ -48,9 +48,10 @@ private:
     unsigned short m_fieldSize;
     unsigned short m_pointCapacity;
     double m_maxMoveTime;
+    QSet<CommandType>  m_knownCommands;
 
-    QTimer *m_timer;
     GameStatus m_status;
+    bool m_shouldExit;
 };
 
 #endif // GAMEMANAGER_H

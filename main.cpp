@@ -7,13 +7,14 @@
 int main(int argc, char *argv[])
 {
     ProtoMedia protoMedia;
-    GameManager gameManager(&protoMedia);
-
     QApplication a(argc, argv);
+    GameManager gameManager(&a, &protoMedia);
+    gameManager.start();
 
     MainWindow w;
     w.show();
 
-    protoMedia.handleCommand(CommandType::CtStartGame);
+    protoMedia.postCommand(CommandType::CtStartGame);
+    // todo: correct threads shutdown
     return a.exec();
 }

@@ -11,10 +11,10 @@ class IProtoNode;
 class IProtoMedia
 {
 public:
-    virtual void subscribe(IProtoNode *protoNode, const QSet<CommandType> &supportedCommands) = 0;
-    virtual void unsubscribe(IProtoNode *protoNode) = 0;
-    virtual void handleCommand(CommandType command, const CommandData &data) = 0;
-    virtual void handleCommand(CommandType command) = 0;
+    virtual void canProcess(IProtoNode *protoNode, const QSet<CommandType> &supportedCommands) = 0;
+
+    virtual void postCommand(CommandType command, const CommandData &data) = 0;
+    virtual void postCommand(CommandType command) = 0;
 };
 
 #endif // IPROTOMEDIA

@@ -11,49 +11,42 @@ ProtoMedia::ProtoMedia()
 
 ProtoMedia::~ProtoMedia()
 {
-    if (!m_nodes.empty())
-    {
-        qWarning() << "Some nodes have not unsubscribed!";
-    }
 }
 
-void ProtoMedia::subscribe(IProtoNode *protoNode, const QSet<CommandType> &supportedCommands)
-{
-    Q_ASSERT(protoNode);
-    for (auto command: supportedCommands)
-    {
-        m_nodes.insert(command, protoNode);
-    }
-}
-
-void ProtoMedia::unsubscribe(IProtoNode *protoNode)
-{
-// TODO
-//    auto nodesBegin = m_nodes.begin();
-//    auto nodesEnd = m_nodes.end();
-//    for (auto nodeIt = nodesBegin; nodeIt != nodesEnd; ++nodeIt)
-//    {
-//        if (nodeIt == protoNode)
-//        {
-//            m_nodes.remove(node);
-//        }
-//    }
-}
-
-void ProtoMedia::handleCommand(CommandType command)
+void ProtoMedia::postCommand(CommandType command)
 {
     CommandData emptyData;
-    this->handleCommand(command, emptyData);
+    postCommand(command, emptyData);
 }
 
-void ProtoMedia::handleCommand(CommandType command, const CommandData &data)
+void ProtoMedia::postCommand(CommandType command, const CommandData &data)
 {
-    auto targetNodes = m_nodes.values(command);
-    for (int i = 0; i < targetNodes.size(); ++i)
+    m_mutex.lock();
+    m_queue.push_back(CmdDataPair(command, data));
+    m_mutex.unlock();
+}
+
+void ProtoMedia::canProcess(IProtoNode *protoNode, const QSet<CommandType> &supportedCommands)
+{
+    m_mutex.lock();
+    auto cmdPairItBegin = m_queue.begin();
+    auto cmdPairItEnd = m_queue.end();
+    for (auto cmdPairIt = cmdPairItBegin; cmdPairIt != cmdPairItEnd; ++ cmdPairIt)
     {
-        if (targetNodes.at(i)->handleCommand(command, data))
+        if (supportedCommands.find((*cmdPairIt).first) != supportedCommands.end())
         {
+            CmdDataPair cdp = *cmdPairIt;
+            m_queue.erase(cmdPairIt);
+            m_mutex.unlock();
+
+            if (!protoNode->handleCommand(cdp.first, cdp.second))
+            {
+                m_mutex.lock();
+                m_queue.push_back(cdp);
+                m_mutex.unlock();
+            }
             return;
         }
     }
+    m_mutex.unlock();
 }
