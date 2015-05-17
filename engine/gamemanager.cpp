@@ -11,7 +11,10 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
 {
     Q_ASSERT(protoMedia);
 
-    m_knownCommands = {CommandType::CtStartGame, CommandType::CtStopGame}; // todo: debug
+    m_knownCommands.insert(CommandType::CtStartGame);
+    m_knownCommands.insert(CommandType::CtStopGame);
+    m_knownCommands.insert(CommandType::CtGetGameState);
+    m_knownCommands.insert(CommandType::CtAddCreature);
 }
 
 GameManager::~GameManager()
@@ -53,6 +56,7 @@ void GameManager::onStop()
 
 void GameManager::onGetStatus() const
 {
+    qDebug() << "Returning game status";
     CommandData data;
     data.append(QVariant(m_status));
     m_protoMedia->postCommand(CommandType::CtGameState, data);

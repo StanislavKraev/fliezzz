@@ -11,10 +11,9 @@ int main(int argc, char *argv[])
     GameManager gameManager(&a, &protoMedia);
     gameManager.start();
 
-    MainWindow w;
+    MainWindow w(&protoMedia);
     w.show();
 
-    protoMedia.postCommand(CommandType::CtStartGame);
     // todo: correct threads shutdown
     return a.exec();
 }
