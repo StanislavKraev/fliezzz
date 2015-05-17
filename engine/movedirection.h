@@ -9,7 +9,8 @@ enum MoveDirection {
     MdSouth,
     MdSouthWest,
     MdWest,
-    MdNorthWest
+    MdNorthWest,
+    MdUnknown
 };
 
 #endif // MOVEDIRECTION

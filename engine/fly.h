@@ -6,10 +6,13 @@
 
 #include "engine/creature.h"
 
+class IGameDataProvider;
+
 class Fly: public Creature
 {
 public:
-    Fly(QObject *parent, const QPoint &startPoint, const QPointF &startPointF, double maxAge, double maxVelocity, double maxAlt);
+    Fly(QObject *parent, const QPoint &startPoint, const QPointF &startPointF,
+        double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, IGameDataProvider *gameDataProvider);
     virtual ~Fly();
     virtual QRectF getBBox() const;
     virtual int getState() const;

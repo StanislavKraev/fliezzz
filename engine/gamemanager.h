@@ -39,6 +39,7 @@ protected:
     virtual QPointF getFreeLandingPoint(const QPoint &pt) const;
     virtual bool isLandingPointFree(const QPointF &pt) const;
     virtual QUuid getCreatureAt(const QPointF &pt) const;
+    virtual QPoint getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const;
 private:
     void getGameState(CommandData &data) const;
 private:

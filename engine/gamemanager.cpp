@@ -113,10 +113,11 @@ void GameManager::onAddCreature(const CommandData &data)
     double maxAge = data[3].toDouble();
     double maxVelocity = data[4].toDouble();
     double maxAlt = data[5].toDouble();
+    double maxThinkTime = data[6].toDouble();
 
     // todo: check max/min values
 
-    Fly *newFly = new Fly(this, startPoint, startPosition, maxAge, maxVelocity, maxAlt);
+    Fly *newFly = new Fly(this, startPoint, startPosition, maxAge, maxVelocity, maxAlt, maxThinkTime, this);
     m_creatures.append(newFly);
 
     newFly->start();
@@ -167,4 +168,9 @@ bool GameManager::isLandingPointFree(const QPointF &pt) const
 QUuid GameManager::getCreatureAt(const QPointF &pt) const
 {
     return QUuid();
+}
+
+QPoint GameManager::getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const
+{
+    return pt; // TODO
 }

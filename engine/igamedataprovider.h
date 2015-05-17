@@ -16,6 +16,7 @@ public:
     virtual QPointF getFreeLandingPoint(const QPoint &pt) const = 0;
     virtual bool isLandingPointFree(const QPointF &pt) const = 0;
     virtual QUuid getCreatureAt(const QPointF &pt) const = 0;
+    virtual QPoint getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const = 0;
 protected:
     IGameDataProvider();
     ~IGameDataProvider();
