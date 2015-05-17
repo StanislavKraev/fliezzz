@@ -49,6 +49,7 @@ private:
 
     QPoint m_targetSpot;
     QPointF m_targetSpotPart;
+    QPointF m_takeOffPt;
 };
 
 #endif // FLYAI_H

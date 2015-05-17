@@ -138,6 +138,7 @@ void FlyAI::advanceThinking(double dt)
             {
                 m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, *(moveDirections.begin()));
             }
+            m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
             emit(thinkTimeout());
         }
     }
@@ -152,6 +153,7 @@ void FlyAI::advanceThinking(double dt)
         {
             m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, *(moveDirections.begin()));
         }
+        m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
         emit(thinkTimeout());
     }
 }
@@ -159,21 +161,102 @@ void FlyAI::advanceThinking(double dt)
 void FlyAI::advanceFlying(double dt)
 {
     m_flyingDuration += dt;
+
+    double s = m_flyingDuration * m_state.m_vel;
+    double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
+    double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
+    double c = sqrt(dx * dx + dy * dy);
+    double maxS = c * m_state.m_vel;
+
+    if (s >= maxS)
+    {
+        s = maxS;
+    }
+
+    double cosA = dx / c;
+    double sinA = dy / c;
+
+    m_state.m_transPos = QPointF(s * cosA, s * sinA);
+
+    m_state.m_age += dt;
+    if (m_state.m_age > m_maxAge)
+    {
+        emit(maxAgeReached());
+        return;
+    }
+
+    if (s >= maxS * 0.7)
+    {
+        emit almostArrived();
+    }
 }
 
 void FlyAI::advanceLanding(double dt)
 {
+    m_flyingDuration += dt;
+
+    double s = m_flyingDuration * m_state.m_vel;
+    double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
+    double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
+    double c = sqrt(dx * dx + dy * dy);
+    double maxS = c * m_state.m_vel;
+
+    if (s >= maxS)
+    {
+        m_state.m_transPos = m_targetSpotPart;
+        m_state.m_pos = m_targetSpot;
+        emit landed();
+        return;
+    }
+
+    double cosA = dx / c;
+    double sinA = dy / c;
+
+    m_state.m_transPos = QPointF(s * cosA, s * sinA);
+
+    m_state.m_age += dt;
+    if (m_state.m_age > m_maxAge)
+    {
+        emit maxAgeReached();
+        return;
+    }
 }
 
 void FlyAI::advanceFalling(double dt)
 {
+    m_state.m_vel -= m_maxVelocity * 0.01 * dt;
+    if (m_state.m_vel < 0.)
+    {
+        m_state.m_vel = 0;
+    }
+    m_state.m_age += dt;
+    m_flyingDuration += dt;
+
+    double cosA = cos(m_state.m_angle);
+    double sinA = sin(m_state.m_angle);
+
+    double s = m_state.m_vel * dt;
+    m_state.m_transPos = QPointF(s * cosA, s * sinA); // todo: ensure not to exit from the game field
+
+    if (m_state.m_vel <= 0.)
+    {
+        emit stopped();
+    }
 }
 
 void FlyAI::onFlyingEnter()
 {
     qDebug() << "Flying enter";
     m_flyingDuration = 0; // todo: shouldn't be reset on continuos flights (when landing was not free)
+    m_state.m_vel = m_maxVelocity * frand(0.8, 1.);
+    m_takeOffPt = m_state.m_transPos;
 
+    double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
+    double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
+    double c = sqrt(dx * dx + dy * dy);
+    double cosA = dx / c;
+
+    m_state.m_angle = acos(cosA);
 }
 
 void FlyAI::onFallingEnter()
@@ -184,11 +267,18 @@ void FlyAI::onFallingEnter()
 void FlyAI::onDeadEnter()
 {
     qDebug() << "Dead enter";
+    m_state.m_vel = 0;
+    m_flyingDuration = 0;
+    m_choosenMove = MoveDirection::MdUnknown;
 }
 
 void FlyAI::onThinkingEnter()
 {
     qDebug() << "Thinking enter";
+    m_state.m_vel = 0;
+    m_flyingDuration = 0;
+    m_choosenMove = MoveDirection::MdUnknown;
+    m_thinkingTime = 0;
 }
 
 void FlyAI::onLandingEnter()
