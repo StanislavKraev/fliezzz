@@ -19,3 +19,8 @@ void CreatureAI::setState(const Creature::CreatureState &state)
 {
     m_state = state;
 }
+
+Creature::CreatureState CreatureAI::getState() const
+{
+    return m_state;
+}

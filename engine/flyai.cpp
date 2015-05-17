@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #include <QState>
 #include <QFinalState>
 #include <QSignalTransition>
@@ -17,6 +18,7 @@ double frand(double from = 0., double to = 1.)
 FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, const Creature::CreatureState &state,
              IGameDataProvider *gameDataProvider):
     CreatureAI(maxAge, maxVelocity, maxAlt, state),
+    m_fsm(nullptr),
     m_flyingDuration(0.),
     m_gameDataProvider(gameDataProvider),
     m_thinkingTime(0.),
@@ -26,22 +28,19 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     m_targetSpotPart(0., 0.),
     m_dt(0.)
 {
+}
+
+void FlyAI::init()
+{
+    Q_ASSERT(m_fsm == nullptr);
+
     m_fsm = new QStateMachine();
 
-    QState *thinkingState = new QState();
-    m_fsm->addState(thinkingState);
-
-    QState *flyingState = new QState();
-    m_fsm->addState(flyingState);
-
-    QState *landingState = new QState();
-    m_fsm->addState(landingState);
-
-    QState *fallingState = new QState();
-    m_fsm->addState(fallingState);
-
-    QFinalState *deadState = new QFinalState();
-    m_fsm->addState(deadState);
+    QState *thinkingState = new QState(m_fsm);
+    QState *flyingState = new QState(m_fsm);
+    QState *landingState = new QState(m_fsm);
+    QState *fallingState = new QState(m_fsm);
+    QFinalState *deadState = new QFinalState(m_fsm);
 
     thinkingState->addTransition(this, SIGNAL(thinkTimeout()), flyingState);
     thinkingState->addTransition(this, SIGNAL(maxAgeReached()), deadState);
@@ -63,7 +62,6 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
 
     QObject::connect(deadState, SIGNAL(entered()), this, SLOT(onDeadEnter()));
 
-    m_fsm->setInitialState(thinkingState);
     QSignalTransition *trans = new QSignalTransition(this, SIGNAL(advanceSignal()));
     thinkingState->addTransition(trans);
     QObject::connect(trans, SIGNAL(triggered()), this, SLOT(advanceThinking()));
@@ -79,6 +77,10 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     QSignalTransition *transFalling = new QSignalTransition(this, SIGNAL(advanceSignal()));
     fallingState->addTransition(transFalling);
     QObject::connect(transFalling, SIGNAL(triggered()), this, SLOT(advanceFalling()));
+
+    m_fsm->setInitialState(thinkingState);
+    m_fsm->start();
+    qDebug() << "fly fsm started";
 }
 
 FlyAI::~FlyAI()
@@ -87,7 +89,7 @@ FlyAI::~FlyAI()
     m_fsm = nullptr;
 }
 
-void FlyAI::advance(double time, Creature::CreatureState &newState)
+void FlyAI::advance(double time)
 {
     if (m_curTime < 0.)
     {
@@ -105,11 +107,12 @@ void FlyAI::advance(double time, Creature::CreatureState &newState)
     m_curTime = time;
     m_dt = dt;
     emit advanceSignal();
-    newState=m_state;
 }
 
 void FlyAI::advanceThinking()
 {
+    qDebug() << "advance thinking";
+
     double dt = m_dt;
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)

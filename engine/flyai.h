@@ -19,7 +19,9 @@ public:
           IGameDataProvider *gameDataProvider);
     virtual ~FlyAI();
 public:
-    virtual void advance(double time, Creature::CreatureState &newState);
+    virtual void init();
+public slots:
+    void advance(double time);
 private slots:
     void advanceThinking();
     void advanceFlying();

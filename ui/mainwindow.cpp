@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QThread>
 
 #include "proto/iprotomedia.h"
 
@@ -33,6 +34,7 @@ MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
     connect(ui->m_startStopBtn, SIGNAL(clicked()), this, SLOT(onStartStop()));
     m_timer = new QTimer();
     connect(m_timer, SIGNAL(timeout()), this, SLOT(tick()));
+    qDebug() << QThread::currentThread()->currentThreadId();
     m_timer->start(100);
     m_protoMedia->postCommand(CommandType::CtGetGameState);
 }

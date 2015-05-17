@@ -1,41 +1,26 @@
+#include <QDebug>
+
 #include "engine/creatureai.h"
 
 #include "creature.h"
 
 Creature::Creature(const QPoint &startPoint, const QPointF &startPointF,
-                   double maxAge, double maxVelocity, double maxAlt, CreatureAI *ai):
+                   double maxAge, double maxVelocity, double maxAlt):
     m_state(startPoint, startPointF, 0., 0., 0., 0., 0.),
     m_maxVel(maxVelocity), m_maxAlt(maxAlt), m_maxAge(maxAge), m_uid(QUuid::createUuid()),
-    m_ai(ai), m_shouldStop(false), m_time(0.)
+    m_shouldStop(false), m_time(0.)
 {
-    Q_ASSERT(m_ai);
 }
 
 Creature::~Creature()
 {
 }
 
-void Creature::advance(double time)
-{
-    m_time = time;
-    m_advanceMutex.unlock();
-}
-
-void Creature::run()
-{
-    while(42)
-    {
-        m_advanceMutex.lock();
-        if (m_shouldStop)
-        {
-            return;
-        }
-
-        Creature::CreatureState newState;
-        this->m_ai->advance(m_time, newState);
-        m_state = newState;
-    }
-}
+//void Creature::advance(double time)
+//{
+//    m_time = time;
+//    m_advanceMutex.unlock();
+//}
 
 void Creature::kill()
 {

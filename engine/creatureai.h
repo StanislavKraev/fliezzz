@@ -9,8 +9,9 @@ public:
     CreatureAI(double maxAge, double maxVelocity, double maxAlt, const Creature::CreatureState &state);
     virtual ~CreatureAI();
 public:
-    virtual void advance(double time, Creature::CreatureState &newState) = 0;
+    virtual void init() = 0;
     void setState(const Creature::CreatureState &state);
+    Creature::CreatureState getState() const;
 protected:
     double m_maxAge;
     double m_maxVelocity;

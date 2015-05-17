@@ -3,14 +3,10 @@
 
 #include <QMutex>
 #include <QRect>
-#include <QThread>
 #include <QUuid>
 
-class CreatureAI;
-
-class Creature: public QThread // todo: aggregate, do not inherit
-{
-    Q_OBJECT
+class Creature
+{   
 public:
     struct CreatureState{
         CreatureState();
@@ -28,18 +24,17 @@ public:
 
 public:
     Creature(const QPoint &startPoint, const QPointF &startPointF,
-             double maxAge, double maxVelocity, double maxAlt, CreatureAI *ai);
+             double maxAge, double maxVelocity, double maxAlt);
     virtual ~Creature();
 public:
     virtual QRectF getBBox() const = 0;
     virtual int getState() const = 0;
     virtual QString getType() const = 0;
+    virtual void advance(double time) = 0;
 
 public:
     QUuid getUid() const;
     QPointF getPosition() const;
-    void advance(double time);
-    void run();
     void kill();
 protected:
     CreatureState m_state;
@@ -47,7 +42,6 @@ protected:
     double m_maxAlt;
     double m_maxAge;
     QUuid m_uid;
-    CreatureAI *m_ai;
     QMutex m_advanceMutex;
     bool m_shouldStop;
     double m_time;

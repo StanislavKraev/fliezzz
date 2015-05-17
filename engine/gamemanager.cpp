@@ -26,6 +26,8 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
 
     m_startTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000.;
     reinitField();
+
+    qDebug() << QThread::currentThread()->currentThreadId();
 }
 
 GameManager::~GameManager()
@@ -91,7 +93,6 @@ void GameManager::run()
         if (m_status == GameStatus::GsStarted)
         {
             double curTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000. - m_startTime;
-            qDebug() << curTime;
             for (auto fly: m_creatures)
             {
                 fly->advance(curTime);
