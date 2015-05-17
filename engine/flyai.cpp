@@ -1,11 +1,17 @@
 #include "flyai.h"
 
-flyai::flyai()
+FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt):
+    CreatureAI(maxAge, maxVelocity, maxAlt)
 {
 
 }
 
-flyai::~flyai()
+FlyAI::~FlyAI()
+{
+
+}
+
+void FlyAI::advance(double time, Creature::CreatureState &newState)
 {
 
 }

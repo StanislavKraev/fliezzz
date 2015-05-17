@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     proto/iprotonode.cpp \
     engine/fly.cpp \
     engine/flyai.cpp \
-    engine/igamedataprovider.cpp
+    engine/igamedataprovider.cpp \
+    proto/customexceptions.cpp
 
 HEADERS  += mainwindow.h \
     engine/creature.h \
@@ -40,7 +41,9 @@ HEADERS  += mainwindow.h \
     engine/fly.h \
     engine/flyai.h \
     engine/igamedataprovider.h \
-    engine/movedirection.h
+    engine/movedirection.h \
+    engine/gamestatus.h \
+    proto/customexceptions.h
 
 FORMS    += ui/mainwindow.ui
 

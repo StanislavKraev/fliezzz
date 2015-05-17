@@ -10,7 +10,9 @@ enum CommandType
     CtAddCreature = 10,
 
     CtGetGameState = 20,
-    CtGetGameDate = 21,
+
+    CtGameState = 30,
+    CtGameData = 31,
 
     CtLast
 };

@@ -1,10 +1,10 @@
 #ifndef COMMANDDATA
 #define COMMANDDATA
 
-#include <QList>
+#include <QVector>
 #include <QVariant>
 
-typedef QList<QVariant> CommandData;
+typedef QVector<QVariant> CommandData;
 
 #endif // COMMANDDATA
 

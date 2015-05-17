@@ -6,17 +6,14 @@
 
 #include "engine/creature.h"
 
-class CreatureAI;
-
 class Fly: public Creature
 {
 public:
-    Fly(const QPoint &startPoint, const QPointF &startPointF, double maxAge, double maxVelocity, double maxAlt, CreatureAI *ai);
+    Fly(QObject *parent, const QPoint &startPoint, const QPointF &startPointF, double maxAge, double maxVelocity, double maxAlt);
     virtual ~Fly();
     virtual QRectF getBBox() const;
-private:
-
-    CreatureAI *m_ai;
+    virtual int getState() const;
+    virtual QString getType() const;
 };
 
 #endif // FLY_H

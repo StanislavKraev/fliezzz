@@ -10,7 +10,7 @@
 class IGameDataProvider
 {
 public:
-    virtual double getPointsSize() const = 0;
+    virtual unsigned short getSize() const = 0;
     virtual unsigned short getPointCapacity() const = 0;
     virtual void getMovesFromPoint(const QPoint &pt, QSet<MoveDirection> &moveDirectionSet) const = 0;
     virtual QPointF getFreeLandingPoint(const QPoint &pt) const = 0;
