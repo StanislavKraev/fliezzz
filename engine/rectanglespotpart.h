@@ -14,6 +14,7 @@ public:
     virtual QList<SpotPart*> split() const;
     virtual double area() const;
     virtual LandingSpot *parentSpot() const;
+    virtual bool contains(const QPointF &pt) const;
 private:
     QRectF m_rect;
     LandingSpot *m_parent;

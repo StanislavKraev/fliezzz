@@ -32,13 +32,14 @@ protected:
     void onGetStatus() const;
     void onChangeConfig();
     void onAddCreature(const CommandData &data);
+    void getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> partIds) const;
 protected:
     virtual bool handleCommand(CommandType ctype, const CommandData &data);
 
     virtual unsigned short getSize() const;
     virtual unsigned short getPointCapacity() const;
     virtual void getMovesFromPoint(const QPoint &pt, QSet<MoveDirection> &moveDirectionSet) const;
-    virtual QPointF getFreeLandingPoint(const QPoint &pt) const;
+    virtual std::shared_ptr<QPointF> getFreeLandingPoint(const QPoint &pt) const;
     virtual bool isLandingPointFree(const QPointF &pt) const;
     virtual QUuid getCreatureAt(const QPointF &pt) const;
     virtual QPoint getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const;

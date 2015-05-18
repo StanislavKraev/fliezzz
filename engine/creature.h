@@ -30,6 +30,7 @@ public:
     virtual QRectF getBBox() const = 0;
     virtual int getState() const = 0;
     virtual QString getType() const = 0;
+    virtual bool isMoving() const = 0;
     virtual void advance(double time) = 0;
 
 public:

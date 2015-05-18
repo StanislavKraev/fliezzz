@@ -38,3 +38,8 @@ LandingSpot *RectangleSpotPart::parentSpot() const
 {
     return m_parent;
 }
+
+bool RectangleSpotPart::contains(const QPointF &pt) const
+{
+    return m_rect.contains(pt);
+}

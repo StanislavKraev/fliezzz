@@ -10,7 +10,8 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
     m_landingSpots.resize(spotCapacity);
     double rx = double(x) * spotSize;
     double ry = double(y) * spotSize;
-    SpotPart *part = new RectangleSpotPart(QRectF(QPointF(rx, ry), QPointF(rx + spotSize, ry + spotSize)), this);
+    m_bbox = QRectF(QPointF(rx, ry), QPointF(rx + spotSize, ry + spotSize));
+    SpotPart *part = new RectangleSpotPart(m_bbox, this);
 
     if (spotCapacity == 1)
     {
@@ -49,3 +50,30 @@ LandingSpot::~LandingSpot()
     }
 }
 
+QRectF LandingSpot::getBBox() const
+{
+    return m_bbox;
+}
+
+unsigned short LandingSpot::getPartsCount() const
+{
+    return m_landingSpots.count();
+}
+
+unsigned short LandingSpot::getPartIndexFromPt(const QPointF &pt) const
+{
+    unsigned short index = 0;
+    for (auto part: m_landingSpots)
+    {
+        if (part->contains(pt)) {
+            return index;
+        }
+        ++index;
+    }
+    return -1; // todo:
+}
+
+SpotPart *LandingSpot::getPart(unsigned short index) const
+{
+    return index >= 0 && index <= m_landingSpots.count() ? m_landingSpots[index] : nullptr;
+}

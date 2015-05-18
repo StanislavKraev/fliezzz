@@ -19,6 +19,11 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
              IGameDataProvider *gameDataProvider):
     CreatureAI(maxAge, maxVelocity, maxAlt, state),
     m_fsm(nullptr),
+    m_thinkingState(nullptr),
+    m_flyingState(nullptr),
+    m_landingState(nullptr),
+    m_fallingState(nullptr),
+    m_deadState(nullptr),
     m_flyingDuration(0.),
     m_gameDataProvider(gameDataProvider),
     m_thinkingTime(0.),
@@ -36,49 +41,49 @@ void FlyAI::init()
 
     m_fsm = new QStateMachine();
 
-    QState *thinkingState = new QState(m_fsm);
-    QState *flyingState = new QState(m_fsm);
-    QState *landingState = new QState(m_fsm);
-    QState *fallingState = new QState(m_fsm);
-    QFinalState *deadState = new QFinalState(m_fsm);
+    QState *m_thinkingState = new QState(m_fsm);
+    QState *m_flyingState = new QState(m_fsm);
+    QState *m_landingState = new QState(m_fsm);
+    QState *m_fallingState = new QState(m_fsm);
+    QFinalState *m_deadState = new QFinalState(m_fsm);
 
-    thinkingState->addTransition(this, SIGNAL(thinkTimeout()), flyingState);
-    thinkingState->addTransition(this, SIGNAL(maxAgeReached()), deadState);
-    QObject::connect(thinkingState, SIGNAL(entered()), this, SLOT(onThinkingEnter()));
+    m_thinkingState->addTransition(this, SIGNAL(thinkTimeout()), m_flyingState);
+    m_thinkingState->addTransition(this, SIGNAL(maxAgeReached()), m_deadState);
+    QObject::connect(m_thinkingState, SIGNAL(entered()), this, SLOT(onThinkingEnter()));
 
-    flyingState->addTransition(this, SIGNAL(almostArrived()), landingState);
-    flyingState->addTransition(this, SIGNAL(maxAgeReached()), fallingState);
-    flyingState->addTransition(this, SIGNAL(maxFlyingDistanceReached()), fallingState);
-    QObject::connect(flyingState, SIGNAL(entered()), this, SLOT(onFlyingEnter()));
+    m_flyingState->addTransition(this, SIGNAL(almostArrived()), m_landingState);
+    m_flyingState->addTransition(this, SIGNAL(maxAgeReached()), m_fallingState);
+    m_flyingState->addTransition(this, SIGNAL(maxFlyingDistanceReached()), m_fallingState);
+    QObject::connect(m_flyingState, SIGNAL(entered()), this, SLOT(onFlyingEnter()));
 
-    landingState->addTransition(this, SIGNAL(maxAgeReached()), fallingState);
-    landingState->addTransition(this, SIGNAL(maxFlyingDistanceReached()), fallingState);
-    landingState->addTransition(this, SIGNAL(thinkTimeout()), flyingState);
-    landingState->addTransition(this, SIGNAL(landed()), thinkingState);
-    QObject::connect(landingState, SIGNAL(entered()), this, SLOT(onLandingEnter()));
+    m_landingState->addTransition(this, SIGNAL(maxAgeReached()), m_fallingState);
+    m_landingState->addTransition(this, SIGNAL(maxFlyingDistanceReached()), m_fallingState);
+    m_landingState->addTransition(this, SIGNAL(thinkTimeout()), m_flyingState);
+    m_landingState->addTransition(this, SIGNAL(landed()), m_thinkingState);
+    QObject::connect(m_landingState, SIGNAL(entered()), this, SLOT(onLandingEnter()));
 
-    fallingState->addTransition(this, SIGNAL(stopped()), deadState);
-    QObject::connect(fallingState, SIGNAL(entered()), this, SLOT(onFallingEnter()));
+    m_fallingState->addTransition(this, SIGNAL(stopped()), m_deadState);
+    QObject::connect(m_fallingState, SIGNAL(entered()), this, SLOT(onFallingEnter()));
 
-    QObject::connect(deadState, SIGNAL(entered()), this, SLOT(onDeadEnter()));
+    QObject::connect(m_deadState, SIGNAL(entered()), this, SLOT(onDeadEnter()));
 
     QSignalTransition *trans = new QSignalTransition(this, SIGNAL(advanceSignal()));
-    thinkingState->addTransition(trans);
+    m_thinkingState->addTransition(trans);
     QObject::connect(trans, SIGNAL(triggered()), this, SLOT(advanceThinking()));
 
     QSignalTransition *transFlying = new QSignalTransition(this, SIGNAL(advanceSignal()));
-    flyingState->addTransition(transFlying);
+    m_flyingState->addTransition(transFlying);
     QObject::connect(transFlying, SIGNAL(triggered()), this, SLOT(advanceFlying()));
 
     QSignalTransition *transLanding = new QSignalTransition(this, SIGNAL(advanceSignal()));
-    landingState->addTransition(transLanding);
+    m_landingState->addTransition(transLanding);
     QObject::connect(transLanding, SIGNAL(triggered()), this, SLOT(advanceLanding()));
 
     QSignalTransition *transFalling = new QSignalTransition(this, SIGNAL(advanceSignal()));
-    fallingState->addTransition(transFalling);
+    m_fallingState->addTransition(transFalling);
     QObject::connect(transFalling, SIGNAL(triggered()), this, SLOT(advanceFalling()));
 
-    m_fsm->setInitialState(thinkingState);
+    m_fsm->setInitialState(m_thinkingState);
     m_fsm->start();
     qDebug() << "fly fsm started";
 }
@@ -125,12 +130,26 @@ void FlyAI::advanceThinking()
     m_gameDataProvider->getMovesFromPoint(m_state.m_pos, moveDirections);
     if (moveDirections.empty())
     {
+        m_choosenMove = MoveDirection::MdUnknown;
+        qDebug() << "No move directions. Waiting";
         return;
     }
 
     m_thinkingTime += dt;
     bool timeIsElapsed = m_thinkingTime >= m_maxThinkTime * FlyAI::MinThinkElaps;
     bool maxTimeIsElapsed = m_thinkingTime >= m_maxThinkTime;
+
+    if (m_choosenMove == MoveDirection::MdUnknown || !moveDirections.contains(m_choosenMove))
+    {
+        int choosenIndex = int(frand() * (double)(moveDirections.count() - 1)); // -1??
+        auto dirIt = moveDirections.begin();
+        while(choosenIndex > 0)
+        {
+            dirIt ++;
+            --choosenIndex;
+        }
+        m_choosenMove = *dirIt;
+    }
 
     if (timeIsElapsed)
     {
@@ -144,7 +163,14 @@ void FlyAI::advanceThinking()
             {
                 m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, *(moveDirections.begin()));
             }
-            m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
+            std::shared_ptr<QPointF> part = m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
+            if (!part)
+            {
+                qWarning() << "Can't move to choosen direction. Continue thinking";
+                return;
+            }
+            m_targetSpotPart = *part;
+            qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart;
             emit(thinkTimeout());
         }
     }
@@ -159,9 +185,17 @@ void FlyAI::advanceThinking()
         {
             m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, *(moveDirections.begin()));
         }
-        m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
+        std::shared_ptr<QPointF> part = m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
+        if (!part)
+        {
+            qWarning() << "Can't move to choosen direction. Continue thinking";
+            return;
+        }
+        m_targetSpotPart = *part;
+        qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart;
         emit(thinkTimeout());
     }
+    qDebug() << "Think further. " << m_thinkingTime << " pos:" << m_state.m_transPos;
 }
 
 void FlyAI::advanceFlying()
@@ -173,7 +207,7 @@ void FlyAI::advanceFlying()
     double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
     double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
     double c = sqrt(dx * dx + dy * dy);
-    double maxS = c * m_state.m_vel;
+    double maxS = c;
 
     if (s >= maxS)
     {
@@ -183,7 +217,7 @@ void FlyAI::advanceFlying()
     double cosA = dx / c;
     double sinA = dy / c;
 
-    m_state.m_transPos = QPointF(s * cosA, s * sinA);
+    m_state.m_transPos = m_takeOffPt + QPointF(s * cosA, s * sinA);
 
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)
@@ -196,6 +230,7 @@ void FlyAI::advanceFlying()
     {
         emit almostArrived();
     }
+    qDebug() << "flying: " << m_state.m_transPos;
 }
 
 void FlyAI::advanceLanding()
@@ -207,12 +242,14 @@ void FlyAI::advanceLanding()
     double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
     double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
     double c = sqrt(dx * dx + dy * dy);
-    double maxS = c * m_state.m_vel;
+    double maxS = c;
 
     if (s >= maxS)
     {
         m_state.m_transPos = m_targetSpotPart;
         m_state.m_pos = m_targetSpot;
+
+        qDebug() << "landing: " << m_state.m_transPos;
         emit landed();
         return;
     }
@@ -220,7 +257,9 @@ void FlyAI::advanceLanding()
     double cosA = dx / c;
     double sinA = dy / c;
 
-    m_state.m_transPos = QPointF(s * cosA, s * sinA);
+    m_state.m_transPos = m_takeOffPt + QPointF(s * cosA, s * sinA);
+
+    qDebug() << "landing: " << m_state.m_transPos;
 
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)
@@ -245,12 +284,14 @@ void FlyAI::advanceFalling()
     double sinA = sin(m_state.m_angle);
 
     double s = m_state.m_vel * dt;
-    m_state.m_transPos = QPointF(s * cosA, s * sinA); // todo: ensure not to exit from the game field
+    m_state.m_transPos = m_takeOffPt + QPointF(s * cosA, s * sinA); // todo: ensure not to exit from the game field
 
     if (m_state.m_vel <= 0.)
     {
         emit stopped();
     }
+
+    qDebug() << "falling: " << m_state.m_transPos;
 }
 
 void FlyAI::onFlyingEnter()
@@ -293,4 +334,10 @@ void FlyAI::onThinkingEnter()
 void FlyAI::onLandingEnter()
 {
     qDebug() << "Landing enter";
+}
+
+bool FlyAI::isMoving() const
+{
+    QSet<QAbstractState*> curState = m_fsm->configuration();
+    return curState.contains(m_flyingState) || curState.contains(m_landingState) || curState.contains(m_fallingState);
 }

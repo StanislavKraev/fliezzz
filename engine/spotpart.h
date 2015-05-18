@@ -20,6 +20,7 @@ public:
     virtual QList<SpotPart*> split() const = 0;
     virtual double area() const = 0;
     virtual LandingSpot *parentSpot() const = 0;
+    virtual bool contains(const QPointF &pt) const = 0;
 };
 
 #endif // SPOTPART_H

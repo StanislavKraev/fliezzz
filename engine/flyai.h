@@ -7,6 +7,7 @@
 #include "engine/movedirection.h"
 
 class QStateMachine;
+class QState;
 class IGameDataProvider;
 
 class FlyAI: public QObject, public CreatureAI
@@ -18,6 +19,8 @@ public:
     FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, const Creature::CreatureState &state,
           IGameDataProvider *gameDataProvider);
     virtual ~FlyAI();
+public:
+    bool isMoving() const;
 public:
     virtual void init();
 public slots:
@@ -43,6 +46,11 @@ signals:
     void stopped();
 private:
     QStateMachine *m_fsm;
+    QState* m_thinkingState;
+    QState* m_flyingState;
+    QState* m_landingState;
+    QState* m_fallingState;
+    QState* m_deadState;
     double m_flyingDuration;
     IGameDataProvider *m_gameDataProvider;
     double m_thinkingTime;

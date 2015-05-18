@@ -23,6 +23,7 @@ public:
     virtual QString getType() const;
     void run();
     virtual void advance(double time);
+    virtual bool isMoving() const;
 signals:
     void advanceAI(double);
 private:

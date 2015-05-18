@@ -51,3 +51,8 @@ void Fly::advance(double time)
     emit advanceAI(time);
     m_state = m_ai->getState();
 }
+
+bool Fly::isMoving() const
+{
+    return m_ai->isMoving();
+}

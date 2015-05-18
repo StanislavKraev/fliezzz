@@ -74,3 +74,18 @@ LandingSpot *TriangleSpotPart::parentSpot() const
 {
     return m_parent;
 }
+
+bool TriangleSpotPart::contains(const QPointF &pt) const
+{
+    auto sign = [] (const QPointF &p1, const QPointF &p2, const QPointF &p3) -> bool
+    {
+        return (p1.x() - p3.x()) * (p2.y() - p3.y()) - (p2.x() - p3.x()) * (p1.y() - p3.y());
+    };
+    bool b1, b2, b3;
+
+    b1 = sign(pt, m_a, m_b) < 0.0f;
+    b2 = sign(pt, m_b, m_c) < 0.0f;
+    b3 = sign(pt, m_c, m_a) < 0.0f;
+
+    return ((b1 == b2) && (b2 == b3));
+}
