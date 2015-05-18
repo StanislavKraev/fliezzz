@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>638</width>
+    <height>526</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -25,13 +31,25 @@
      <rect>
       <x>-1</x>
       <y>-1</y>
-      <width>401</width>
-      <height>241</height>
+      <width>641</width>
+      <height>502</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QGraphicsView" name="m_graphicsView">
+       <property name="minimumSize">
+        <size>
+         <width>500</width>
+         <height>500</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>500</height>
+        </size>
+       </property>
        <property name="interactive">
         <bool>false</bool>
        </property>
@@ -56,8 +74,8 @@
        <widget class="QPushButton" name="m_startStopBtn">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>0</y>
+          <x>20</x>
+          <y>10</y>
           <width>99</width>
           <height>27</height>
          </rect>
@@ -69,8 +87,8 @@
        <widget class="QPushButton" name="m_addFlyBtn">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>210</y>
+          <x>20</x>
+          <y>40</y>
           <width>99</width>
           <height>27</height>
          </rect>
@@ -89,20 +107,11 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>638</width>
      <height>25</height>
     </rect>
    </property>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

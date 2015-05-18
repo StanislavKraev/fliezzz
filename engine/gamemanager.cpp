@@ -124,7 +124,6 @@ void GameManager::onAddCreature(const CommandData &data)
     }
 
     QPoint startPoint(data[1].toPoint());
-    //QPointF startPosition(data[2].toPointF());
     std::shared_ptr<QPointF> startPosition = getFreeLandingPoint(startPoint);
     if (!startPosition)
     {
@@ -132,16 +131,10 @@ void GameManager::onAddCreature(const CommandData &data)
         return;
     }
 
-//    double defaultMaxAge=60.; // s
-//    double defaultMaxVelociy=0.1; // m/s/
-//    double defaultMaxAlt=0.01; // m
-
     double maxAge = data[2].toDouble();
     double maxVelocity = data[3].toDouble();
     double maxAlt = data[4].toDouble();
     double maxThinkTime = data[5].toDouble();
-
-    // todo: check max/min values
 
     {
         QMutexLocker locker(&m_creatureMutex);

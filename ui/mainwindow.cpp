@@ -31,12 +31,12 @@ MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
     m_gameStatus(GameStatus::GsStopped)
 {
     ui->setupUi(this);
-
-    ui->m_graphicsView->setFixedSize(203, 203);
+    setFixedSize(650, 505);
     ui->m_graphicsView->setRenderHint(QPainter::Antialiasing);
     QGraphicsScene *scene = new QGraphicsScene(this);
     ui->m_graphicsView->setScene(scene);
     ui->m_graphicsView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    ui->m_graphicsView->scene()->setSceneRect(0, 0, 500, 500);
 
     m_knownCommands.insert(CommandType::CtGameState);
     m_knownCommands.insert(CommandType::CtGameData);
@@ -109,7 +109,6 @@ void MainWindow::onGameData(const CommandData &data)
     const unsigned int pointCapacity = data[2].toUInt();
     const unsigned int creaturesCount = data[3].toUInt();
 
-    ui->m_graphicsView->scene()->setSceneRect(0, 0, 200, 200);
 
     double width = ui->m_graphicsView->scene()->width();
     double height = ui->m_graphicsView->scene()->height();
