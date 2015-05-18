@@ -30,6 +30,8 @@ private slots:
     void onAddFly1();
 private:
     void onGameState(const CommandData &data);
+    void onGameData(const CommandData &data);
+    void drawGrid(unsigned int fieldSize);
 private:
     Ui::MainWindow *ui;
     IProtoMedia *m_protoMedia;
