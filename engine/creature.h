@@ -1,7 +1,6 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
-#include <QMutex>
 #include <QRect>
 #include <QUuid>
 
@@ -43,7 +42,6 @@ protected:
     double m_maxAlt;
     double m_maxAge;
     QUuid m_uid;
-    QMutex m_advanceMutex;
     bool m_shouldStop;
     double m_time;
 };

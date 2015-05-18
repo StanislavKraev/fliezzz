@@ -25,7 +25,6 @@ Creature::~Creature()
 void Creature::kill()
 {
     m_shouldStop = true;
-    m_advanceMutex.unlock();
 }
 
 QUuid Creature::getUid() const

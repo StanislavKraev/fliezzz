@@ -51,6 +51,7 @@ private:
     QState* m_landingState;
     QState* m_fallingState;
     QState* m_deadState;
+    QState* m_curState;
     double m_flyingDuration;
     IGameDataProvider *m_gameDataProvider;
     double m_thinkingTime;

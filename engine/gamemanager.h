@@ -1,6 +1,7 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
+#include <QMutex>
 #include <QSet>
 #include <QThread>
 #include <QVector>
@@ -59,6 +60,7 @@ private:
     bool m_shouldExit;
     QVector<LandingSpot*> m_field;
     double m_startTime;
+    mutable QMutex m_creatureMutex;
 };
 
 #endif // GAMEMANAGER_H

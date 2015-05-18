@@ -24,6 +24,7 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     m_landingState(nullptr),
     m_fallingState(nullptr),
     m_deadState(nullptr),
+    m_curState(nullptr),
     m_flyingDuration(0.),
     m_gameDataProvider(gameDataProvider),
     m_thinkingTime(0.),
@@ -296,6 +297,7 @@ void FlyAI::advanceFalling()
 
 void FlyAI::onFlyingEnter()
 {
+    m_curState = m_flyingState;
     qDebug() << "Flying enter";
     m_flyingDuration = 0; // todo: shouldn't be reset on continuos flights (when landing was not free)
     m_state.m_vel = m_maxVelocity * frand(0.8, 1.);
@@ -311,11 +313,13 @@ void FlyAI::onFlyingEnter()
 
 void FlyAI::onFallingEnter()
 {
+    m_curState = m_fallingState;
     qDebug() << "Falling enter";
 }
 
 void FlyAI::onDeadEnter()
 {
+    m_curState = m_deadState;
     qDebug() << "Dead enter";
     m_state.m_vel = 0;
     m_flyingDuration = 0;
@@ -324,6 +328,7 @@ void FlyAI::onDeadEnter()
 
 void FlyAI::onThinkingEnter()
 {
+    m_curState = m_thinkingState;
     qDebug() << "Thinking enter";
     m_state.m_vel = 0;
     m_flyingDuration = 0;
@@ -333,11 +338,11 @@ void FlyAI::onThinkingEnter()
 
 void FlyAI::onLandingEnter()
 {
+    m_curState = m_landingState;
     qDebug() << "Landing enter";
 }
 
 bool FlyAI::isMoving() const
 {
-    QSet<QAbstractState*> curState = m_fsm->configuration();
-    return curState.contains(m_flyingState) || curState.contains(m_landingState) || curState.contains(m_fallingState);
+    return m_curState == m_flyingState || m_curState == m_landingState || m_curState == m_fallingState;
 }

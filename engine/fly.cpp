@@ -1,4 +1,5 @@
 #include <QDebug>
+
 #include "engine/flyai.h"
 
 #include "fly.h"
@@ -31,7 +32,7 @@ int Fly::getState() const
 
 QString Fly::getType() const
 {
-    return ""; // TODO
+    return "fly";
 }
 
 void Fly::run()
@@ -46,7 +47,6 @@ void Fly::run()
 
 void Fly::advance(double time)
 {
-    Creature::CreatureState newState;
     //this->m_ai->advance(time, newState);
     emit advanceAI(time);
     m_state = m_ai->getState();
@@ -54,5 +54,9 @@ void Fly::advance(double time)
 
 bool Fly::isMoving() const
 {
+    if (!m_ai)
+    {
+        return false;
+    }
     return m_ai->isMoving();
 }

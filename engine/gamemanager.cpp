@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDateTime>
+#include <QMutexLocker>
 
 #include "proto/customexceptions.h"
 #include "proto/iprotomedia.h"
@@ -95,6 +96,7 @@ void GameManager::run()
 
         if (m_status == GameStatus::GsStarted)
         {
+            QMutexLocker locker(&m_creatureMutex);
             double curTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000. - m_startTime;
             for (auto fly: m_creatures)
             {
@@ -141,14 +143,17 @@ void GameManager::onAddCreature(const CommandData &data)
 
     // todo: check max/min values
 
-    Fly *newFly = new Fly(this, startPoint, *startPosition, maxAge, maxVelocity, maxAlt, maxThinkTime);
-    m_creatures.append(newFly);
-
-    newFly->start();
+    {
+        QMutexLocker locker(&m_creatureMutex);
+        Fly *newFly = new Fly(this, startPoint, *startPosition, maxAge, maxVelocity, maxAlt, maxThinkTime);
+        m_creatures.append(newFly);
+        newFly->start();
+    }
 }
 
 void GameManager::getGameState(CommandData &data) const
 {
+    QMutexLocker locker(&m_creatureMutex);
     data.clear();
     data.reserve(m_creatures.count() * 4 + 4);
     data.append(QVariant(1)); // data type version
@@ -241,7 +246,7 @@ void GameManager::getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> 
 
     QRectF spotRect = spot->getBBox();
     unsigned short spotPartsCount = spot->getPartsCount();
-    // sync access to creature data
+    QMutexLocker locker(&m_creatureMutex);
     for (auto creature: m_creatures)
     {
         if (creature->isMoving())
