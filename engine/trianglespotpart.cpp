@@ -15,7 +15,7 @@ TriangleSpotPart::~TriangleSpotPart()
 
 QPointF TriangleSpotPart::getCenter() const
 {
-    return QPointF(m_a.x() + m_b.x() + m_c.x(), m_a.y() + m_b.y() + m_c.y());
+    return QPointF(m_a.x() + m_b.x() + m_c.x(), m_a.y() + m_b.y() + m_c.y()) / 3.0;
 }
 
 QRectF TriangleSpotPart::getBBox() const
