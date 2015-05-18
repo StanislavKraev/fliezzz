@@ -133,7 +133,6 @@ void MainWindow::onGameData(const CommandData &data)
         item->setTransformationMode(Qt::SmoothTransformation);
         item->setPos(pos.x() * width / (double)fieldSize - flyWidth / 2., pos.y() * height / (double)fieldSize - flyHeight / 2.);
         item->setScale(1.0 / 30. * flyHeight);
-
     }
 }
 

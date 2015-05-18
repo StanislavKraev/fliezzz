@@ -291,12 +291,14 @@ std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) cons
         return nullptr;
     }
 
+    QList<QPointF> freeParts;
     for (unsigned short i = 0; i < spotPartsCount; ++i)
     {
         if (!partIds.contains(i))
         {
             //qDebug() << "getFreeLandingPoint occupied parts: found empty";
-            return std::make_shared<QPointF>(spot->getPart(i)->getCenter());
+            //return std::make_shared<QPointF>(spot->getPart(i)->getCenter());
+            freeParts.append(spot->getPart(i)->getCenter());
         }
     }
 
