@@ -42,11 +42,11 @@ void FlyAI::init()
 
     m_fsm = new QStateMachine();
 
-    QState *m_thinkingState = new QState(m_fsm);
-    QState *m_flyingState = new QState(m_fsm);
-    QState *m_landingState = new QState(m_fsm);
-    QState *m_fallingState = new QState(m_fsm);
-    QFinalState *m_deadState = new QFinalState(m_fsm);
+    m_thinkingState = new QState(m_fsm);
+    m_flyingState = new QState(m_fsm);
+    m_landingState = new QState(m_fsm);
+    m_fallingState = new QState(m_fsm);
+    m_deadState = new QFinalState(m_fsm);
 
     m_thinkingState->addTransition(this, SIGNAL(thinkTimeout()), m_flyingState);
     m_thinkingState->addTransition(this, SIGNAL(maxAgeReached()), m_deadState);
@@ -117,8 +117,6 @@ void FlyAI::advance(double time)
 
 void FlyAI::advanceThinking()
 {
-    qDebug() << "advance thinking";
-
     double dt = m_dt;
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)
@@ -142,7 +140,7 @@ void FlyAI::advanceThinking()
 
     if (m_choosenMove == MoveDirection::MdUnknown || !moveDirections.contains(m_choosenMove))
     {
-        int choosenIndex = int(frand() * (double)(moveDirections.count() - 1)); // -1??
+        int choosenIndex = int(frand() * (double)(moveDirections.count()));
         auto dirIt = moveDirections.begin();
         while(choosenIndex > 0)
         {
@@ -162,7 +160,16 @@ void FlyAI::advanceThinking()
             }
             else
             {
-                m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, *(moveDirections.begin()));
+                int choosenIndex = int(frand() * (double)(moveDirections.count()));
+                auto dirIt = moveDirections.begin();
+                while(choosenIndex > 0)
+                {
+                    dirIt ++;
+                    --choosenIndex;
+                }
+                m_choosenMove = *dirIt;
+
+                m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, m_choosenMove);
             }
             std::shared_ptr<QPointF> part = m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
             if (!part)
@@ -196,7 +203,7 @@ void FlyAI::advanceThinking()
         qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart;
         emit(thinkTimeout());
     }
-    qDebug() << "Think further. " << m_thinkingTime << " pos:" << m_state.m_transPos;
+    //qDebug() << "Think further. " << m_thinkingTime << " pos:" << m_state.m_transPos;
 }
 
 void FlyAI::advanceFlying()
@@ -231,7 +238,7 @@ void FlyAI::advanceFlying()
     {
         emit almostArrived();
     }
-    qDebug() << "flying: " << m_state.m_transPos;
+    //qDebug() << "flying: " << m_state.m_transPos;
 }
 
 void FlyAI::advanceLanding()
@@ -250,7 +257,13 @@ void FlyAI::advanceLanding()
         m_state.m_transPos = m_targetSpotPart;
         m_state.m_pos = m_targetSpot;
 
-        qDebug() << "landing: " << m_state.m_transPos;
+        if (!m_gameDataProvider->isLandingPointFree(m_targetSpotPart))
+        {
+            changeRoute();
+            return;
+        }
+
+        //qDebug() << "landing: " << m_state.m_transPos;
         emit landed();
         return;
     }
@@ -260,7 +273,7 @@ void FlyAI::advanceLanding()
 
     m_state.m_transPos = m_takeOffPt + QPointF(s * cosA, s * sinA);
 
-    qDebug() << "landing: " << m_state.m_transPos;
+    //qDebug() << "landing: " << m_state.m_transPos;
 
     m_state.m_age += dt;
     if (m_state.m_age > m_maxAge)
@@ -268,12 +281,17 @@ void FlyAI::advanceLanding()
         emit maxAgeReached();
         return;
     }
+
+    if (!m_gameDataProvider->isLandingPointFree(m_targetSpotPart))
+    {
+        changeRoute();
+    }
 }
 
 void FlyAI::advanceFalling()
 {
     double dt = m_dt;
-    m_state.m_vel -= m_maxVelocity * 0.01 * dt;
+    m_state.m_vel -= m_maxVelocity * dt;
     if (m_state.m_vel < 0.)
     {
         m_state.m_vel = 0;
@@ -319,7 +337,7 @@ void FlyAI::onFallingEnter()
 
 void FlyAI::onDeadEnter()
 {
-    m_curState = m_deadState;
+    m_curState = 0; // hack
     qDebug() << "Dead enter";
     m_state.m_vel = 0;
     m_flyingDuration = 0;
@@ -345,4 +363,38 @@ void FlyAI::onLandingEnter()
 bool FlyAI::isMoving() const
 {
     return m_curState == m_flyingState || m_curState == m_landingState || m_curState == m_fallingState;
+}
+
+void FlyAI::changeRoute()
+{
+    QSet<MoveDirection> moveDirections;
+    m_gameDataProvider->getMovesFromPoint(m_state.m_pos, moveDirections);
+    m_choosenMove = MoveDirection::MdUnknown;
+    if (moveDirections.empty())
+    {
+        qDebug() << "No move directions. Dying";
+        emit maxFlyingDistanceReached(); // todo: create correct signal
+        return;
+    }
+
+    int choosenIndex = int(frand() * (double)(moveDirections.count()));
+    auto dirIt = moveDirections.begin();
+    while(choosenIndex > 0)
+    {
+        dirIt ++;
+        --choosenIndex;
+    }
+    m_choosenMove = *dirIt;
+
+    m_targetSpot = m_gameDataProvider->getPointByDirection(m_state.m_pos, m_choosenMove);
+
+    std::shared_ptr<QPointF> part = m_gameDataProvider->getFreeLandingPoint(m_targetSpot);
+    if (!part)
+    {
+        qDebug() << "No moves. Dying";
+        emit maxFlyingDistanceReached(); // todo: create correct signal
+        return;
+    }
+    m_targetSpotPart = *part;
+    emit thinkTimeout(); // todo: create correct signal
 }

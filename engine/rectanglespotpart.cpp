@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "engine/trianglespotpart.h"
 
 #include "rectanglespotpart.h"
@@ -42,4 +44,9 @@ LandingSpot *RectangleSpotPart::parentSpot() const
 bool RectangleSpotPart::contains(const QPointF &pt) const
 {
     return m_rect.contains(pt);
+}
+
+void RectangleSpotPart::tostring() const
+{
+    qDebug() << "rect spot part";
 }

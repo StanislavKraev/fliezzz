@@ -30,8 +30,10 @@ MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
 {
     ui->setupUi(this);
 
+    ui->m_graphicsView->setFixedSize(203, 203);
     QGraphicsScene *scene = new QGraphicsScene(this);
     ui->m_graphicsView->setScene(scene);
+    ui->m_graphicsView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     m_knownCommands.insert(CommandType::CtGameState);
     m_knownCommands.insert(CommandType::CtGameData);
@@ -94,17 +96,17 @@ void MainWindow::onGameState(const CommandData &data)
 
 void MainWindow::onGameData(const CommandData &data)
 {
-    qDebug() << "data received";
     if (data[0] != 1)
     {
         qWarning() << "Incompatible packed";
         return;
     }
     ui->m_graphicsView->scene()->clear();
-    ui->m_graphicsView->scene()->setSceneRect(0, 0, 100., 100.);
     const unsigned int fieldSize = data[1].toUInt();
     const unsigned int pointCapacity = data[2].toUInt();
     const unsigned int creaturesCount = data[3].toUInt();
+
+    ui->m_graphicsView->scene()->setSceneRect(0, 0, 200, 200);
 
     double width = ui->m_graphicsView->scene()->width();
     double height = ui->m_graphicsView->scene()->height();
@@ -120,7 +122,8 @@ void MainWindow::onGameData(const CommandData &data)
         QPointF pos = data[4 + creatureIndex * 4 + 2].toPointF();
         int state = data[4 + creatureIndex * 4 + 3].toInt();
 
-        ui->m_graphicsView->scene()->addEllipse(pos.x() * width - flyWidth / 2., pos.y() * height - flyHeight / 2., flyWidth, flyHeight);
+        ui->m_graphicsView->scene()->addEllipse(pos.x() * width / (double)fieldSize - flyWidth / 2., pos.y() * height / (double)fieldSize - flyHeight / 2., flyWidth, flyHeight);
+        //qDebug() << pos.x() * width - flyWidth / 2. << " " << pos.y() * height - flyHeight / 2. << " " << flyWidth << " " << flyHeight;
     }
 }
 
@@ -129,7 +132,6 @@ void MainWindow::drawGrid(unsigned int fieldSize)
     double width = ui->m_graphicsView->scene()->width();
     double height = ui->m_graphicsView->scene()->height();
 
-    qDebug() << "scene: " << width << " x" << height;
     for (unsigned int i = 0; i < fieldSize + 1; ++i)
     {
         ui->m_graphicsView->scene()->addLine(0, i * (height / (double)fieldSize), width, i * (height / (double)fieldSize));
@@ -143,7 +145,7 @@ void MainWindow::onAddFly1()
     data.append(QVariant("fly"));
     data.append(QVariant(QPoint(2, 2)));
     data.append(QVariant(60.));
-    data.append(QVariant(0.1));
+    data.append(QVariant(0.5));
     data.append(QVariant(0.01));
     data.append(QVariant(3.));
     m_protoMedia->postCommand(CommandType::CtAddCreature, data);

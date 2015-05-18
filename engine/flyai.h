@@ -8,6 +8,7 @@
 
 class QStateMachine;
 class QState;
+class QFinalState;
 class IGameDataProvider;
 
 class FlyAI: public QObject, public CreatureAI
@@ -36,6 +37,8 @@ private slots:
     void onDeadEnter();
     void onThinkingEnter();
     void onLandingEnter();
+private:
+    void changeRoute();
 signals:
     void maxAgeReached();
     void maxFlyingDistanceReached();
@@ -50,7 +53,7 @@ private:
     QState* m_flyingState;
     QState* m_landingState;
     QState* m_fallingState;
-    QState* m_deadState;
+    QFinalState* m_deadState;
     QState* m_curState;
     double m_flyingDuration;
     IGameDataProvider *m_gameDataProvider;

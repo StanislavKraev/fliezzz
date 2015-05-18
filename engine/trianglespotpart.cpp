@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QLine>
 
 #include "trianglespotpart.h"
@@ -5,7 +6,7 @@
 TriangleSpotPart::TriangleSpotPart(const QPointF &a, const QPointF &b, const QPointF &c, LandingSpot *parent):
     m_a(a), m_b(b), m_c(c), m_parent(parent)
 {
-
+    m_poly << m_a << m_b << m_c;
 }
 
 TriangleSpotPart::~TriangleSpotPart()
@@ -20,12 +21,7 @@ QPointF TriangleSpotPart::getCenter() const
 
 QRectF TriangleSpotPart::getBBox() const
 {
-    double minX = std::min(std::min(m_a.x(), m_b.x()), m_c.x());
-    double minY = std::min(std::min(m_a.y(), m_b.y()), m_c.y());
-
-    double maxX = std::max(std::max(m_a.x(), m_b.x()), m_c.x());
-    double maxY = std::max(std::max(m_a.y(), m_b.y()), m_c.y());
-    return QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
+    return m_poly.boundingRect();
 }
 
 QList<SpotPart*> TriangleSpotPart::split() const
@@ -77,15 +73,10 @@ LandingSpot *TriangleSpotPart::parentSpot() const
 
 bool TriangleSpotPart::contains(const QPointF &pt) const
 {
-    auto sign = [] (const QPointF &p1, const QPointF &p2, const QPointF &p3) -> bool
-    {
-        return (p1.x() - p3.x()) * (p2.y() - p3.y()) - (p2.x() - p3.x()) * (p1.y() - p3.y());
-    };
-    bool b1, b2, b3;
+    return m_poly.containsPoint(pt, Qt::OddEvenFill);
+}
 
-    b1 = sign(pt, m_a, m_b) < 0.0f;
-    b2 = sign(pt, m_b, m_c) < 0.0f;
-    b3 = sign(pt, m_c, m_a) < 0.0f;
-
-    return ((b1 == b2) && (b2 == b3));
+void TriangleSpotPart::tostring() const
+{
+    qDebug() << "tri spot part: " << m_a << " " << m_b << " " << m_c;
 }

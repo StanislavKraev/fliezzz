@@ -21,6 +21,8 @@ public:
     virtual double area() const = 0;
     virtual LandingSpot *parentSpot() const = 0;
     virtual bool contains(const QPointF &pt) const = 0;
+
+    virtual void tostring() const = 0;
 };
 
 #endif // SPOTPART_H

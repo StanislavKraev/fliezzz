@@ -240,7 +240,7 @@ void GameManager::getMovesFromPoint(const QPoint &pt, QSet<MoveDirection> &moveD
     }
 }
 
-void GameManager::getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> partIds) const
+void GameManager::getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> &partIds) const
 {
     partIds.clear();
 
@@ -258,8 +258,12 @@ void GameManager::getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> 
         {
             continue;
         }
-        unsigned short spotPartIndex = spot->getPartIndexFromPt(creaturePos);
-        partIds.insert(spotPartIndex);
+        short spotPartIndex = spot->getPartIndexFromPt(creaturePos);
+        if (spotPartIndex >= 0)
+        {
+            partIds.insert(spotPartIndex);
+        }
+
         if (partIds.count() == spotPartsCount)
         {
             return;
@@ -269,6 +273,7 @@ void GameManager::getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> 
 
 std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) const
 {
+    //qDebug() << "getFreeLandingPoint " << pt;
     int pos = pt.y() * m_fieldSize + pt.x();
     if (pos >= m_field.count())
     {
@@ -277,9 +282,11 @@ std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) cons
     LandingSpot *spot = m_field[pt.y() * m_fieldSize + pt.x()];
     QSet<unsigned short> partIds;
     getSpotsOccupiedParts(spot, partIds);
+    //qDebug() << "getFreeLandingPoint occupied parts: " << partIds.count();
     unsigned short spotPartsCount = spot->getPartsCount();
     if (partIds.count() >= spotPartsCount)
     {
+        //qDebug() << "getFreeLandingPoint occupied parts: all occupied";
         return nullptr;
     }
 
@@ -287,15 +294,18 @@ std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) cons
     {
         if (!partIds.contains(i))
         {
+            //qDebug() << "getFreeLandingPoint occupied parts: found empty";
             return std::make_shared<QPointF>(spot->getPart(i)->getCenter());
         }
     }
 
+    //qDebug() << "getFreeLandingPoint occupied parts: strange. not found!";
     return nullptr;
 }
 
 bool GameManager::isLandingPointFree(const QPointF &pt) const
 {
+    //qDebug() << "isLandingPointFree " << pt;
     for (auto spot: m_field)
     {
         if (!spot->getBBox().contains(pt))
@@ -304,6 +314,7 @@ bool GameManager::isLandingPointFree(const QPointF &pt) const
         }
         QSet<unsigned short> partIds;
         getSpotsOccupiedParts(spot, partIds);
+        //qDebug() << "isLandingPointFree: occupied spot parts: " << partIds.count();
 
         unsigned short spotPartsCount = spot->getPartsCount();
         if (partIds.count() >= spotPartsCount)
@@ -319,11 +330,14 @@ bool GameManager::isLandingPointFree(const QPointF &pt) const
             }
             if (spot->getPart(i)->contains(pt))
             {
+                //qDebug() << "isLandingPointFree: true ";
                 return true;
             }
         }
+        //qDebug() << "isLandingPointFree: false ";
         return false;
     }
+    //qDebug() << "isLandingPointFree: false ";
     return false;
 }
 
@@ -362,7 +376,7 @@ QPoint GameManager::getPointByDirection(const QPoint &pt, MoveDirection moveDire
 void GameManager::reinitField()
 {
     // todo: dynamic field reinit
-    const double cellSize = 0.1;
+    const double cellSize = 1.;
     m_field.resize(m_fieldSize * m_fieldSize);
     for (unsigned int i = 0; i < m_fieldSize * m_fieldSize; ++i)
     {

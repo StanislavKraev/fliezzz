@@ -33,7 +33,7 @@ protected:
     void onGetStatus() const;
     void onChangeConfig();
     void onAddCreature(const CommandData &data);
-    void getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> partIds) const;
+    void getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> &partIds) const;
 protected:
     virtual bool handleCommand(CommandType ctype, const CommandData &data);
 

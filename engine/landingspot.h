@@ -14,7 +14,7 @@ public:
 public:
     QRectF getBBox() const;
     unsigned short getPartsCount() const;
-    unsigned short getPartIndexFromPt(const QPointF &pt) const;
+    short getPartIndexFromPt(const QPointF &pt) const;
     SpotPart *getPart(unsigned short index) const;
 private:
     QVector<SpotPart *> m_landingSpots;

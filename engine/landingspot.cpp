@@ -11,7 +11,7 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
     double rx = double(x) * spotSize;
     double ry = double(y) * spotSize;
     m_bbox = QRectF(QPointF(rx, ry), QPointF(rx + spotSize, ry + spotSize));
-    qDebug() << "add spot: " << m_bbox;
+    //qDebug() << "add spot: " << m_bbox;
     SpotPart *part = new RectangleSpotPart(m_bbox, this);
 
     if (spotCapacity == 1)
@@ -21,8 +21,8 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
 
     QList<SpotPart *> parts = part->split();
     delete part;
-    qDebug() << "first split 1: " << parts.at(0)->getCenter();
-    qDebug() << "first split 2: " << parts.at(1)->getCenter();
+    //qDebug() << "first split 1: " << parts.at(0)->getCenter();
+    //qDebug() << "first split 2: " << parts.at(1)->getCenter();
 
     m_landingSpots[0] = parts.at(0);
     m_landingSpots[1] = parts.at(1);
@@ -40,9 +40,13 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
     unsigned int i = 0;
     for (auto nextPart: parts)
     {
-        m_landingSpots[i] = nextPart;
-        i++;
+        m_landingSpots[i++] = nextPart;
     }
+
+//    for (auto nextPart2: m_landingSpots)
+//    {
+//        nextPart2->tostring();
+//    }
 }
 
 LandingSpot::~LandingSpot()
@@ -63,17 +67,20 @@ unsigned short LandingSpot::getPartsCount() const
     return m_landingSpots.count();
 }
 
-unsigned short LandingSpot::getPartIndexFromPt(const QPointF &pt) const
+short LandingSpot::getPartIndexFromPt(const QPointF &pt) const
 {
+    //qDebug() << "LandingSpot::getPartIndexFromPt " << pt << " inside " << m_bbox;
     unsigned short index = 0;
     for (auto part: m_landingSpots)
     {
         if (part->contains(pt)) {
+            //qDebug() << "LandingSpot::getPartIndexFromPt result: " << index;
             return index;
         }
         ++index;
     }
-    return -1; // todo:
+    //qDebug() << "LandingSpot::getPartIndexFromPt result: -1";
+    return -1;
 }
 
 SpotPart *LandingSpot::getPart(unsigned short index) const
