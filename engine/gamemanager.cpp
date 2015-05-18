@@ -155,8 +155,8 @@ void GameManager::getGameState(CommandData &data) const
 {
     QMutexLocker locker(&m_creatureMutex);
     data.clear();
-    data.reserve(m_creatures.count() * 4 + 4);
-    data.append(QVariant(1)); // data type version
+    data.reserve(m_creatures.count() * 5 + 4);
+    data.append(QVariant(2)); // data type version
     data.append(QVariant(m_fieldSize));
     data.append(QVariant(m_pointCapacity));
     data.append(QVariant(m_creatures.count()));
@@ -166,6 +166,7 @@ void GameManager::getGameState(CommandData &data) const
         data.append(creature->getType());
         data.append(creature->getPosition());
         data.append(creature->getState());
+        data.append(creature->getAngle());
     }
 }
 

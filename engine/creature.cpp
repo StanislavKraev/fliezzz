@@ -37,6 +37,11 @@ QPointF Creature::getPosition() const
     return m_state.m_transPos;
 }
 
+double Creature::getAngle() const
+{
+    return m_state.m_angle;
+}
+
 Creature::CreatureState::CreatureState() :
     m_angle(0.), m_vel(0.), m_alt(0.), m_age(0.), m_mileage(0.)
 {
@@ -63,3 +68,4 @@ Creature::CreatureState& Creature::CreatureState::operator=(const Creature::Crea
     m_mileage = right.m_mileage;
     return *this;
 }
+

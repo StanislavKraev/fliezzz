@@ -150,6 +150,8 @@ void FlyAI::advanceThinking()
         m_choosenMove = *dirIt;
     }
 
+    // todo: set angle
+
     if (timeIsElapsed)
     {
         if (frand() > 0.5)

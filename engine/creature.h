@@ -36,6 +36,7 @@ public:
     QUuid getUid() const;
     QPointF getPosition() const;
     void kill();
+    double getAngle() const;
 protected:
     CreatureState m_state;
     double m_maxVel;

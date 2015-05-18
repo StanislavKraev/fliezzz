@@ -57,3 +57,6 @@ FORMS    += ui/mainwindow.ui
 
 DISTFILES += \
     docs/tasks.txt
+
+RESOURCES += \
+    resources.qrc

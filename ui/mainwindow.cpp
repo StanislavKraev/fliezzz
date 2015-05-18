@@ -1,6 +1,8 @@
 #include <QDebug>
 #include <QThread>
+#include <QTransform>
 #include <QUuid>
+#include <QGraphicsPixmapItem>
 
 #include "proto/iprotomedia.h"
 
@@ -31,6 +33,7 @@ MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
     ui->setupUi(this);
 
     ui->m_graphicsView->setFixedSize(203, 203);
+    ui->m_graphicsView->setRenderHint(QPainter::Antialiasing);
     QGraphicsScene *scene = new QGraphicsScene(this);
     ui->m_graphicsView->setScene(scene);
     ui->m_graphicsView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -96,7 +99,7 @@ void MainWindow::onGameState(const CommandData &data)
 
 void MainWindow::onGameData(const CommandData &data)
 {
-    if (data[0] != 1)
+    if (data[0] != 2)
     {
         qWarning() << "Incompatible packed";
         return;
@@ -111,19 +114,26 @@ void MainWindow::onGameData(const CommandData &data)
     double width = ui->m_graphicsView->scene()->width();
     double height = ui->m_graphicsView->scene()->height();
 
-    double flyWidth = width / (double) fieldSize * 0.6;
-    double flyHeight = height / (double) fieldSize * 0.9;
+    double flyWidth = width / (double) fieldSize / (double)pointCapacity;
+    double flyHeight = height / (double) fieldSize / (double)pointCapacity;
 
     drawGrid(fieldSize);
     for (unsigned int creatureIndex = 0; creatureIndex < creaturesCount; ++creatureIndex)
     {
-        QUuid uid = data[4 + creatureIndex * 4].toUuid();
-        QString type = data[4 + creatureIndex * 4 + 1].toString();
-        QPointF pos = data[4 + creatureIndex * 4 + 2].toPointF();
-        int state = data[4 + creatureIndex * 4 + 3].toInt();
+        QUuid uid = data[4 + creatureIndex * 5].toUuid();
+        QString type = data[4 + creatureIndex * 5 + 1].toString();
+        QPointF pos = data[4 + creatureIndex * 5 + 2].toPointF();
+        int state = data[4 + creatureIndex * 5 + 3].toInt();
+        double angle = data[4 + creatureIndex * 5 + 4].toDouble();
 
-        ui->m_graphicsView->scene()->addEllipse(pos.x() * width / (double)fieldSize - flyWidth / 2., pos.y() * height / (double)fieldSize - flyHeight / 2., flyWidth, flyHeight);
-        //qDebug() << pos.x() * width - flyWidth / 2. << " " << pos.y() * height - flyHeight / 2. << " " << flyWidth << " " << flyHeight;
+        QTransform transform;
+        QTransform trans = transform.rotate(90 + angle * 180. / 3.14159265);
+        QGraphicsPixmapItem *item = ui->m_graphicsView->scene()->addPixmap(QPixmap(QString(":/ui/fly.png")).transformed(trans));
+
+        item->setTransformationMode(Qt::SmoothTransformation);
+        item->setPos(pos.x() * width / (double)fieldSize - flyWidth / 2., pos.y() * height / (double)fieldSize - flyHeight / 2.);
+        item->setScale(1.0 / 30. * flyHeight);
+
     }
 }
 
@@ -144,9 +154,9 @@ void MainWindow::onAddFly1()
     CommandData data;
     data.append(QVariant("fly"));
     data.append(QVariant(QPoint(2, 2)));
-    data.append(QVariant(60.));
-    data.append(QVariant(0.5));
+    data.append(QVariant(10. + (double)rand() / RAND_MAX * 40.));
+    data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 1.5));
     data.append(QVariant(0.01));
-    data.append(QVariant(3.));
+    data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 3.));
     m_protoMedia->postCommand(CommandType::CtAddCreature, data);
 }
