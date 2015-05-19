@@ -50,7 +50,6 @@
 
 ===============================================
 
-* do not recreate graphicitems every tick. just once. then move, rotate, add new, delete missing
 * the fly params visualize
 * show statistics on stop
 * dynamic field resize

@@ -33,6 +33,7 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     m_knownCommands.insert(CommandType::CtStopGame);
     m_knownCommands.insert(CommandType::CtGetGameState);
     m_knownCommands.insert(CommandType::CtAddCreature);
+    m_knownCommands.insert(CommandType::CtGetConfig);
 
     reinitField();
 
@@ -70,6 +71,9 @@ bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
     case CommandType::CtAddCreature:
         onAddCreature(data);
         break;
+    case CommandType::CtGetConfig:
+        onGetConfig();
+        break;
     default:
         return false;
     }
@@ -91,15 +95,21 @@ void GameManager::onStop()
 
 void GameManager::onGetStatus() const
 {
-    qDebug() << "Returning game status";
     CommandData data;
     data.append(QVariant(m_status));
     m_protoMedia->postCommand(CommandType::CtGameState, data);
 }
 
+void GameManager::onGetConfig() const
+{
+    CommandData data;
+    data.append(QVariant(m_fieldSize));
+    data.append(QVariant(m_pointCapacity));
+    m_protoMedia->postCommand(CommandType::CtGameConfig, data);
+}
+
 void GameManager::onChangeConfig()
 {
-
 }
 
 void GameManager::run()
@@ -172,10 +182,8 @@ void GameManager::getGameState(CommandData &data) const
 {
     QMutexLocker locker(&m_creatureMutex);
     data.clear();
-    data.reserve(m_creatures.count() * 5 + 4);
-    data.append(QVariant(2)); // data type version
-    data.append(QVariant(m_fieldSize));
-    data.append(QVariant(m_pointCapacity));
+    data.reserve(m_creatures.count() * 5 + 2);
+    data.append(QVariant(3)); // data type version
     data.append(QVariant(m_creatures.count()));
     for (auto creature: m_creatures)
     {
@@ -314,7 +322,6 @@ std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) cons
         if (!partIds.contains(i))
         {
             //qDebug() << "getFreeLandingPoint occupied parts: found empty";
-            //return std::make_shared<QPointF>(spot->getPart(i)->getCenter());
             freeParts.append(spot->getPart(i)->getCenter());
         }
     }

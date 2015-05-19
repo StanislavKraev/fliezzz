@@ -40,6 +40,7 @@ private slots:
 private:
     void onGameState(const proto::CommandData &data);
     void onGameData(const proto::CommandData &data);
+    void onConfig(const proto::CommandData &data);
     void closeEvent();
     void addFly(const QPoint &pt);
 private:

@@ -6,6 +6,7 @@
 
 #include "proto/iprotomedia.h"
 
+#include "flygraphicsitem.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -50,6 +51,7 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
 
     m_knownCommands.insert(CommandType::CtGameState);
     m_knownCommands.insert(CommandType::CtGameData);
+    m_knownCommands.insert(CommandType::CtGameConfig);
 
     connect(ui->m_addFlyBtn, SIGNAL(clicked()), this, SLOT(onAddFly1()));
     connect(ui->m_startStopBtn, SIGNAL(clicked()), this, SLOT(onStartStop()));
@@ -58,6 +60,7 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
     qDebug() << QThread::currentThread()->currentThreadId();
     m_timer->start(100);
     m_protoMedia->postCommand(CommandType::CtGetGameState);
+    m_protoMedia->postCommand(CommandType::CtGetConfig);
 }
 
 void MainWindow::onStartStop()
@@ -82,6 +85,9 @@ bool MainWindow::handleCommand(proto::CommandType ctype, const proto::CommandDat
         break;
     case CommandType::CtGameData:
         onGameData(data);
+        break;
+    case CommandType::CtGameConfig:
+        onConfig(data);
         break;
     default:
         return false;
@@ -109,40 +115,45 @@ void MainWindow::onGameState(const proto::CommandData &data)
 
 void MainWindow::onGameData(const proto::CommandData &data)
 {
-    if (data[0] != 2)
+    if (data[0] != 3)
     {
         qWarning() << "Incompatible packed";
         return;
     }
 
-    const unsigned int fieldSize = data[1].toUInt();
-    const unsigned int pointCapacity = data[2].toUInt();
-    const unsigned int creaturesCount = data[3].toUInt();
-
-    ui->m_graphicsView->initGraphics(fieldSize);
-    ui->m_graphicsView->draw();
+    const unsigned int creaturesCount = data[1].toUInt();
 
     double width = ui->m_graphicsView->scene()->width();
     double height = ui->m_graphicsView->scene()->height();
 
-    double flyWidth = width / (double) fieldSize / (double)pointCapacity;
-    double flyHeight = height / (double) fieldSize / (double)pointCapacity;
+    double fieldSize = (double)ui->m_graphicsView->getFieldSize();
+    double pointCapacity = (double)ui->m_graphicsView->getPointCapacity();
+
+    double flyWidth = width / fieldSize / sqrt(pointCapacity);
+    double flyHeight = height / fieldSize / sqrt(pointCapacity);
 
     for (unsigned int creatureIndex = 0; creatureIndex < creaturesCount; ++creatureIndex)
     {
-//        QUuid uid = data[4 + creatureIndex * 5].toUuid();
-//        QString type = data[4 + creatureIndex * 5 + 1].toString();
-        QPointF pos = data[4 + creatureIndex * 5 + 2].toPointF();
-//        int state = data[4 + creatureIndex * 5 + 3].toInt();
-        double angle = data[4 + creatureIndex * 5 + 4].toDouble();
+        QUuid uid = data[2 + creatureIndex * 5].toUuid();
+//        QString type = data[2 + creatureIndex * 5 + 1].toString();
+        QPointF pos = data[2 + creatureIndex * 5 + 2].toPointF();
+//        int state = data[2 + creatureIndex * 5 + 3].toInt();
+        double angle = data[2 + creatureIndex * 5 + 4].toDouble();
 
-        QTransform transform;
-        QTransform trans = transform.rotate(90 + angle * 180. / 3.14159265);
-        QGraphicsPixmapItem *item = ui->m_graphicsView->scene()->addPixmap(QPixmap(QString(":/ui/fly.png")).transformed(trans));
+        GraphicsItem *item = ui->m_graphicsView->getItem(uid);
+        if (!item)
+        {
+            GraphicsItem *item = ui->m_graphicsView->addItem(uid, new FlyGraphicsItem(uid, flyWidth, flyHeight));
+        }
+        if (item)
+        {
+            QPoint movePt = QPoint(pos.x() * width / (double)ui->m_graphicsView->getFieldSize(),
+                                   pos.y() * height / (double)ui->m_graphicsView->getFieldSize());
+            item->update(movePt, 90 + angle * 180. / 3.14159265);
 
-        item->setTransformationMode(Qt::SmoothTransformation);
-        item->setPos(pos.x() * width / (double)fieldSize - flyWidth / 2., pos.y() * height / (double)fieldSize - flyHeight / 2.);
-        item->setScale(1.0 / 30. * flyHeight);
+        }
+
+        // todo: remove obsolete items from scene
     }
 }
 
@@ -166,6 +177,16 @@ void MainWindow::onAddFly1()
 void MainWindow::onCellClick(const QPoint &pt)
 {
     addFly(pt);
+}
+
+void MainWindow::onConfig(const proto::CommandData &data)
+{
+    // todo: skip if config actually was not changed
+
+    qDebug() << "on config - reset scene";
+    const unsigned int fieldSize = data[0].toUInt();
+    const unsigned int pointCapacity = data[1].toUInt();
+    ui->m_graphicsView->initGraphics(fieldSize, pointCapacity);
 }
 
 }

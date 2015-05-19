@@ -39,6 +39,7 @@ protected:
     void onStart();
     void onStop();
     void onGetStatus() const;
+    void onGetConfig() const;
     void onChangeConfig();
     void onAddCreature(const proto::CommandData &data);
     void getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> &partIds) const;

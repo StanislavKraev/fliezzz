@@ -1,9 +1,13 @@
 #include <QMouseEvent>
 #include <QDebug>
 
+#include "graphicsitem.h"
 #include "graphicsview.h"
 
-GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent), m_fieldSize(0)
+namespace ui
+{
+
+GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent), m_fieldSize(0), m_pointCapacity(0)
 {
 
 }
@@ -32,11 +36,13 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent * mouseEvent)
     mouseEvent->accept();
 }
 
-void GraphicsView::initGraphics(unsigned short fieldSize)
+void GraphicsView::initGraphics(unsigned short fieldSize, unsigned short pointCapacity)
 {
     Q_ASSERT(fieldSize > 1 && fieldSize <= 100);
 
     m_fieldSize = fieldSize;
+    m_pointCapacity = pointCapacity;
+    draw();
 }
 
 void GraphicsView::draw()
@@ -46,6 +52,7 @@ void GraphicsView::draw()
         return;
     }
     scene()->clear();
+    qDebug() << "clear scene";
     drawGrid();
 }
 
@@ -59,4 +66,35 @@ void GraphicsView::drawGrid()
         scene()->addLine(0, i * (height / (double)m_fieldSize), width, i * (height / (double)m_fieldSize));
         scene()->addLine(i * (width / (double)m_fieldSize), 0, i * (width / (double)m_fieldSize), height);
     }
+}
+
+GraphicsItem *GraphicsView::addItem(const QUuid &uid, GraphicsItem *item)
+{
+    auto it = m_items.find(uid);
+    if (it != m_items.end())
+    {
+        delete item;
+        return getItem(uid);
+    }
+    m_items[uid] = item;
+    scene()->addItem(item->getQGraphicsItem());
+    return item;
+}
+
+GraphicsItem *GraphicsView::getItem(const QUuid &uid) const
+{
+    auto it = m_items.find(uid);
+    return it == m_items.end() ? nullptr : *it;
+}
+
+unsigned short GraphicsView::getFieldSize() const
+{
+    return m_fieldSize;
+}
+
+unsigned short GraphicsView::getPointCapacity() const
+{
+    return m_pointCapacity;
+}
+
 }
