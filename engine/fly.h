@@ -28,6 +28,7 @@ public:
     virtual void advance(double dt);
     virtual bool isMoving() const;
     virtual void stopAI();
+    virtual double getMaxThinkTime() const;
 signals:
     void advanceAI(double);
 private:

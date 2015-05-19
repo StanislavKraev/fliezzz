@@ -20,6 +20,7 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
     if (spotCapacity == 1)
     {
         m_landingSpots[0] = part;
+        return;
     }
 
     QList<SpotPart *> parts = part->split();

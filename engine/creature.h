@@ -34,6 +34,7 @@ public:
     virtual QString getType() const = 0;
     virtual bool isMoving() const = 0;
     virtual void advance(double dt) = 0;
+    virtual double getMaxThinkTime() const = 0;
 
     virtual void stopAI() = 0;
 

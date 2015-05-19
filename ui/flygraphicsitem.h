@@ -13,7 +13,7 @@ namespace ui
 class FlyGraphicsItem: public QGraphicsPixmapItem, public GraphicsItem
 {
 public:
-    explicit FlyGraphicsItem(const QUuid &flyUid, double width, double height);
+    explicit FlyGraphicsItem(const QUuid &flyUid, double width, double height, double thinkTime);
     virtual ~FlyGraphicsItem();
 public:
     virtual QUuid getUid() const;
@@ -23,6 +23,7 @@ private:
     QUuid m_flyUid;
     double m_width;
     double m_height;
+    double m_thinkTime;
 };
 
 }

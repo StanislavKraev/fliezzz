@@ -9,7 +9,7 @@ namespace engine
 
 Creature::Creature(const QPoint &startPoint, const QPointF &startPointF,
                    double maxAge, double maxVelocity, double maxAlt):
-    m_state(startPoint, startPointF, 0., 0., 0., 0., 0.),
+    m_state(startPoint, startPointF, - 3.1415 / 2., 0., 0., 0., 0.),
     m_maxVel(maxVelocity), m_maxAlt(maxAlt), m_maxAge(maxAge), m_uid(QUuid::createUuid()),
     m_shouldStop(false), m_time(0.)
 {

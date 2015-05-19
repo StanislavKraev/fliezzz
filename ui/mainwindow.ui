@@ -84,18 +84,38 @@
          <string>Start</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="m_addFlyBtn">
+       <widget class="QWidget" name="">
         <property name="geometry">
          <rect>
-          <x>20</x>
-          <y>40</y>
-          <width>99</width>
-          <height>27</height>
+          <x>8</x>
+          <y>50</y>
+          <width>121</width>
+          <height>80</height>
          </rect>
         </property>
-        <property name="text">
-         <string>Add Fly</string>
-        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QRadioButton" name="fastBtn">
+           <property name="text">
+            <string>Быстрая</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="normalBtn">
+           <property name="text">
+            <string>Обычная</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="stupidBtn">
+           <property name="text">
+            <string>Тупая</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>

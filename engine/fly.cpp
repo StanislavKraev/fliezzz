@@ -76,4 +76,9 @@ void Fly::stopAI()
     wait();
 }
 
+double Fly::getMaxThinkTime() const
+{
+    return m_maxThinkTime;
+}
+
 }

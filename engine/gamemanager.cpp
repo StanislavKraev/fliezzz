@@ -21,7 +21,7 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     QThread(parent),
     m_protoMedia(protoMedia),
     m_fieldSize(10),
-    m_pointCapacity(3),
+    m_pointCapacity(1),
     m_maxMoveTime(3.),
     m_status(GameStatus::GsStopped),
     m_shouldExit(false),
@@ -182,8 +182,8 @@ void GameManager::getGameState(CommandData &data) const
 {
     QMutexLocker locker(&m_creatureMutex);
     data.clear();
-    data.reserve(m_creatures.count() * 5 + 2);
-    data.append(QVariant(3)); // data type version
+    data.reserve(m_creatures.count() * 6 + 2);
+    data.append(QVariant(4)); // data type version
     data.append(QVariant(m_creatures.count()));
     for (auto creature: m_creatures)
     {
@@ -192,6 +192,7 @@ void GameManager::getGameState(CommandData &data) const
         data.append(creature->getPosition());
         data.append(creature->getState());
         data.append(creature->getAngle());
+        data.append(creature->getMaxThinkTime());
     }
 }
 

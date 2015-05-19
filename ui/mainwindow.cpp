@@ -53,7 +53,12 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
     m_knownCommands.insert(CommandType::CtGameData);
     m_knownCommands.insert(CommandType::CtGameConfig);
 
-    connect(ui->m_addFlyBtn, SIGNAL(clicked()), this, SLOT(onAddFly1()));
+    QButtonGroup *group = new QButtonGroup(this);
+    group->addButton(ui->fastBtn);
+    group->addButton(ui->normalBtn);
+    group->addButton(ui->stupidBtn);
+    ui->fastBtn->setChecked(true);
+
     connect(ui->m_startStopBtn, SIGNAL(clicked()), this, SLOT(onStartStop()));
     m_timer = new QTimer();
     connect(m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -115,9 +120,9 @@ void MainWindow::onGameState(const proto::CommandData &data)
 
 void MainWindow::onGameData(const proto::CommandData &data)
 {
-    if (data[0] != 3)
+    if (data[0] != 4)
     {
-        qWarning() << "Incompatible packed";
+        qWarning() << "Incompatible packet";
         return;
     }
 
@@ -134,16 +139,17 @@ void MainWindow::onGameData(const proto::CommandData &data)
 
     for (unsigned int creatureIndex = 0; creatureIndex < creaturesCount; ++creatureIndex)
     {
-        QUuid uid = data[2 + creatureIndex * 5].toUuid();
-//        QString type = data[2 + creatureIndex * 5 + 1].toString();
-        QPointF pos = data[2 + creatureIndex * 5 + 2].toPointF();
-        int state = data[2 + creatureIndex * 5 + 3].toInt();
-        double angle = data[2 + creatureIndex * 5 + 4].toDouble();
+        QUuid uid = data[2 + creatureIndex * 6].toUuid();
+//        QString type = data[2 + creatureIndex * 6 + 1].toString();
+        QPointF pos = data[2 + creatureIndex * 6 + 2].toPointF();
+        int state = data[2 + creatureIndex * 6 + 3].toInt();
+        double angle = data[2 + creatureIndex * 6 + 4].toDouble();
+        double thinkTime = data[2 + creatureIndex * 6 + 5].toDouble();
 
         GraphicsItem *item = ui->m_graphicsView->getItem(uid);
         if (!item)
         {
-            GraphicsItem *item = ui->m_graphicsView->addItem(uid, new FlyGraphicsItem(uid, flyWidth, flyHeight));
+            item = ui->m_graphicsView->addItem(uid, new FlyGraphicsItem(uid, flyWidth, flyHeight, thinkTime));
         }
         if (item)
         {
@@ -159,13 +165,15 @@ void MainWindow::onGameData(const proto::CommandData &data)
 
 void MainWindow::addFly(const QPoint &pt)
 {
+    double thinkMultiplier = ui->fastBtn->isChecked() ? 0.5 : (ui->normalBtn->isChecked() ? 2. : 5.);
+    double thinkMin = ui->fastBtn->isChecked() ? 0.2 : (ui->normalBtn->isChecked() ? 1. : 3.);
     CommandData data;
     data.append(QVariant("fly"));
     data.append(QVariant(pt));
     data.append(QVariant(10. + (double)rand() / RAND_MAX * 40.));
     data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 1.5));
     data.append(QVariant(0.01));
-    data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 3.));
+    data.append(QVariant(thinkMin + (double)rand() / RAND_MAX * thinkMultiplier));
     m_protoMedia->postCommand(CommandType::CtAddCreature, data);
 }
 
