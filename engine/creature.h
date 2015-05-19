@@ -33,7 +33,7 @@ public:
     virtual int getState() const = 0;
     virtual QString getType() const = 0;
     virtual bool isMoving() const = 0;
-    virtual void advance(double time) = 0;
+    virtual void advance(double dt) = 0;
 
 public:
     QUuid getUid() const;

@@ -29,7 +29,7 @@ public:
 public:
     virtual void init();
 public slots:
-    void advance(double time);
+    void advance(double dt);
 private slots:
     void advanceThinking();
     void advanceFlying();

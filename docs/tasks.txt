@@ -50,8 +50,6 @@
 
 ===============================================
 
-* namespaces
-* stopping - change advance(time) to advance(dt)
 * pixmap correct rotation
 * sometimes the fly can't move to free neighbour cell
 * sometimes the fly moves from one spot part to another of the same landing spot

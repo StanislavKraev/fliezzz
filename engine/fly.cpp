@@ -15,7 +15,6 @@ Fly::Fly(IGameDataProvider *gameDataProvider, const QPoint &startPoint, const QP
     m_gameDataProvider(gameDataProvider)
 {
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
-    qDebug() << "fly created";
 }
 
 Fly::~Fly()
@@ -48,10 +47,9 @@ void Fly::run()
     exec();
 }
 
-void Fly::advance(double time)
+void Fly::advance(double dt)
 {
-    //this->m_ai->advance(time, newState);
-    emit advanceAI(time);
+    emit advanceAI(dt);
     m_state = m_ai->getState();
 }
 

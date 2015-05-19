@@ -25,7 +25,7 @@ public:
     virtual int getState() const;
     virtual QString getType() const;
     void run();
-    virtual void advance(double time);
+    virtual void advance(double dt);
     virtual bool isMoving() const;
 signals:
     void advanceAI(double);

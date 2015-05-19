@@ -98,23 +98,13 @@ FlyAI::~FlyAI()
     m_fsm = nullptr;
 }
 
-void FlyAI::advance(double time)
+void FlyAI::advance(double dt)
 {
-    if (m_curTime < 0.)
-    {
-        m_curTime = time;
-        return;
-    }
-
-    double dt = time - m_curTime;
-    if (dt < 0.)
-    {
-        qWarning() << "Invalid time";
-        return;
-    }
-
-    m_curTime = time;
     m_dt = dt;
+    if (dt <= 0)
+    {
+        return;
+    }
     emit advanceSignal();
 }
 

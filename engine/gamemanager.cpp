@@ -24,7 +24,8 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     m_pointCapacity(3),
     m_maxMoveTime(3.),
     m_status(GameStatus::GsStopped),
-    m_shouldExit(false)
+    m_shouldExit(false),
+    m_startTime(0.)
 {
     Q_ASSERT(protoMedia);
 
@@ -33,7 +34,6 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     m_knownCommands.insert(CommandType::CtGetGameState);
     m_knownCommands.insert(CommandType::CtAddCreature);
 
-    m_startTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000.;
     reinitField();
 
     qDebug() << QThread::currentThread()->currentThreadId();
@@ -68,6 +68,7 @@ bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
 void GameManager::onStart()
 {
     qDebug() << "Game start";
+    m_startTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000.;
     m_status = GameStatus::GsStarted;
 }
 
@@ -94,22 +95,23 @@ void GameManager::run()
 {
     while (!m_shouldExit)
     {
-//        qDebug() << "tick";
         CommandData gameState;
         this->getGameState(gameState);
         m_protoMedia->postCommand(CommandType::CtGameData, gameState);
 
+        double curTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000.;
+        double dt = m_startTime > 0 ? curTime - m_startTime : 0;
         if (m_status == GameStatus::GsStarted)
         {
             QMutexLocker locker(&m_creatureMutex);
-            double curTime = (double)(QDateTime::currentMSecsSinceEpoch()) / 1000. - m_startTime;
             for (auto fly: m_creatures)
             {
-                fly->advance(curTime);
+                fly->advance(dt);
             }
         }
 
         m_protoMedia->canProcess(this, m_knownCommands);
+        m_startTime = curTime;
         msleep(GameManager::CycleDelay);
     }
 }
@@ -342,7 +344,7 @@ bool GameManager::isLandingPointFree(const QPointF &pt) const
     return false;
 }
 
-QUuid GameManager::getCreatureAt(const QPointF &pt) const
+QUuid GameManager::getCreatureAt(const QPointF &) const
 {
     return QUuid();
 }
@@ -379,7 +381,7 @@ void GameManager::reinitField()
     // todo: dynamic field reinit
     const double cellSize = 1.;
     m_field.resize(m_fieldSize * m_fieldSize);
-    for (unsigned int i = 0; i < m_fieldSize * m_fieldSize; ++i)
+    for (int i = 0; i < m_fieldSize * m_fieldSize; ++i)
     {
         m_field[i] = new LandingSpot(i % m_fieldSize, i / m_fieldSize, cellSize, m_pointCapacity);
     }
