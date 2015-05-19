@@ -21,7 +21,7 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     QThread(parent),
     m_protoMedia(protoMedia),
     m_fieldSize(10),
-    m_pointCapacity(1),
+    m_pointCapacity(3),
     m_maxMoveTime(3.),
     m_status(GameStatus::GsStopped),
     m_shouldExit(false),
@@ -34,6 +34,7 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     m_knownCommands.insert(CommandType::CtGetGameState);
     m_knownCommands.insert(CommandType::CtAddCreature);
     m_knownCommands.insert(CommandType::CtGetConfig);
+    m_knownCommands.insert(CommandType::CtChangeConfig);
 
     reinitField();
 
@@ -74,6 +75,9 @@ bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
     case CommandType::CtGetConfig:
         onGetConfig();
         break;
+    case CommandType::CtChangeConfig:
+        onChangeConfig(data);
+        break;
     default:
         return false;
     }
@@ -108,8 +112,35 @@ void GameManager::onGetConfig() const
     m_protoMedia->postCommand(CommandType::CtGameConfig, data);
 }
 
-void GameManager::onChangeConfig()
+void GameManager::onChangeConfig(const proto::CommandData &data)
 {
+    unsigned short newFieldSize = data.at(0).toUInt();
+    unsigned short newSpotCapacity = data.at(1).toUInt();
+
+    if (newFieldSize < 2 || newFieldSize > 40 || newSpotCapacity < 1 || newSpotCapacity > 20)
+    {
+        qWarning() << "Invalid config: " << newFieldSize << " & " << newSpotCapacity;
+        return;
+    }
+
+    for (auto creature: m_creatures)
+    {
+        creature->stopAI();
+    }
+
+    QMutexLocker locker(&m_creatureMutex);
+    for (auto creature: m_creatures)
+    {
+        delete creature;
+    }
+    m_creatures.clear();
+    m_fieldSize = newFieldSize;
+    m_pointCapacity = newSpotCapacity;
+    m_status = GameStatus::GsStopped;
+    reinitField();
+
+    onGetStatus();
+    onGetConfig();
 }
 
 void GameManager::run()
@@ -414,7 +445,15 @@ QPoint GameManager::getPointByDirection(const QPoint &pt, MoveDirection moveDire
 
 void GameManager::reinitField()
 {
-    // todo: dynamic field reinit
+    if (m_field.count())
+    {
+        for (auto spot: m_field)
+        {
+            delete spot;
+        }
+    }
+    m_field.clear();
+
     const double cellSize = 1.;
     m_field.resize(m_fieldSize * m_fieldSize);
     for (int i = 0; i < m_fieldSize * m_fieldSize; ++i)

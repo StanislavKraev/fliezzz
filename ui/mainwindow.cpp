@@ -62,7 +62,10 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
     connect(ui->m_startStopBtn, SIGNAL(clicked()), this, SLOT(onStartStop()));
     m_timer = new QTimer();
     connect(m_timer, SIGNAL(timeout()), this, SLOT(tick()));
-    qDebug() << QThread::currentThread()->currentThreadId();
+
+    connect(ui->fieldSizeSlider, SIGNAL(sliderReleased()), this, SLOT(onFieldSizeChange()));
+    connect(ui->spotCapacitySlider, SIGNAL(sliderReleased()), this, SLOT(onSpotCapacityChange()));
+
     m_timer->start(100);
     m_protoMedia->postCommand(CommandType::CtGetGameState);
     m_protoMedia->postCommand(CommandType::CtGetConfig);
@@ -196,5 +199,22 @@ void MainWindow::onConfig(const proto::CommandData &data)
     const unsigned int pointCapacity = data[1].toUInt();
     ui->m_graphicsView->initGraphics(fieldSize, pointCapacity);
 }
+
+void MainWindow::onFieldSizeChange()
+{
+    CommandData data;
+    data.append(QVariant(ui->fieldSizeSlider->value()));
+    data.append(QVariant(ui->spotCapacitySlider->value()));
+    m_protoMedia->postCommand(CommandType::CtChangeConfig, data);
+}
+
+void MainWindow::onSpotCapacityChange()
+{
+    CommandData data;
+    data.append(QVariant(ui->fieldSizeSlider->value()));
+    data.append(QVariant(ui->spotCapacitySlider->value()));
+    m_protoMedia->postCommand(CommandType::CtChangeConfig, data);
+}
+
 
 }

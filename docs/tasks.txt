@@ -50,6 +50,5 @@
 
 ===============================================
 
-* the fly params visualize
 * show statistics on stop
 * dynamic field resize

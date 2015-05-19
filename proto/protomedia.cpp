@@ -29,11 +29,12 @@ void ProtoMedia::postCommand(CommandType command, const CommandData &data)
 
     if (m_queue.count() > ProtoMedia::MaxQueueSize)
     {
-        for (auto it = m_queue.begin(); m_queue.count() > ProtoMedia::MaxQueueSize && it != m_queue.end(); ++it)
+        QMutableListIterator<CmdDataPair> it(m_queue);
+        while (it.hasNext() && m_queue.count() > ProtoMedia::MaxQueueSize)
         {
-            if ((*it).first > CommandType::CtObsoletableCommands)
+            if (it.next().first > CommandType::CtObsoletableCommands)
             {
-                it = m_queue.erase(it);
+                it.remove();
             }
         }
     }

@@ -37,6 +37,8 @@ private slots:
     void tick();
     void onAddFly1();
     void onCellClick(const QPoint &pt);
+    void onFieldSizeChange();
+    void onSpotCapacityChange();
 private:
     void onGameState(const proto::CommandData &data);
     void onGameData(const proto::CommandData &data);
