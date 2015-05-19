@@ -131,6 +131,7 @@ void GameManager::onAddCreature(const CommandData &data)
     }
 
     QPoint startPoint(data[1].toPoint());
+    qWarning() << "Adding creature to " << startPoint;
     std::shared_ptr<QPointF> startPosition = getFreeLandingPoint(startPoint);
     if (!startPosition)
     {
@@ -302,8 +303,19 @@ std::shared_ptr<QPointF> GameManager::getFreeLandingPoint(const QPoint &pt) cons
         }
     }
 
-    //qDebug() << "getFreeLandingPoint occupied parts: strange. not found!";
-    return nullptr;
+    if (!freeParts.count())
+    {
+        return nullptr;
+    }
+
+    int choosenIndex = int((double)rand() / (double)RAND_MAX * (double)freeParts.count());
+    auto partIt = freeParts.begin();
+    while(choosenIndex > 0)
+    {
+        partIt ++;
+        --choosenIndex;
+    }
+    return std::make_shared<QPointF>(*partIt);
 }
 
 bool GameManager::isLandingPointFree(const QPointF &pt) const
