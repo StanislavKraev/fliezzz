@@ -87,6 +87,10 @@ void MainWindow::onStartStop()
         m_protoMedia->postCommand(CommandType::CtStartGame);
     }
     m_protoMedia->postCommand(CommandType::CtGetGameState);
+    if (m_gameStatus == GameStatus::GsStarted)
+    {
+        getStats();
+    }
 }
 
 bool MainWindow::handleCommand(proto::CommandType ctype, const proto::CommandData &data)
@@ -126,7 +130,6 @@ void MainWindow::onGameState(const proto::CommandData &data)
     else
     {
         ui->m_startStopBtn->setText("start");
-        getStats();
     }
 }
 
@@ -235,6 +238,7 @@ void MainWindow::onStats(const proto::CommandData &data)
     {
         return;
     }
+    qDebug() << "show stats";
     QDialog *newDialog = new QDialog(this);
     newDialog->setLayout(new QVBoxLayout());
     QPlainTextEdit *edit = new QPlainTextEdit(newDialog);

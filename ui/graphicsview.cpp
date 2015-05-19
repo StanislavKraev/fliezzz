@@ -49,6 +49,7 @@ void GraphicsView::draw()
 {
     if (!scene())
     {
+        qDebug() << "no scene! return";
         return;
     }
     scene()->clear();
