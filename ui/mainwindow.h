@@ -43,8 +43,10 @@ private:
     void onGameState(const proto::CommandData &data);
     void onGameData(const proto::CommandData &data);
     void onConfig(const proto::CommandData &data);
+    void onStats(const proto::CommandData &data);
     void closeEvent();
     void addFly(const QPoint &pt);
+    void getStats();
 private:
     Ui::MainWindow *ui;
     proto::IProtoMedia *m_protoMedia;

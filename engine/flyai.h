@@ -14,6 +14,7 @@ namespace engine
 {
 
 class IGameDataProvider;
+class IMovesHolder;
 
 class FlyAI: public QObject, public CreatureAI
 {
@@ -22,7 +23,7 @@ public:
     const double MinThinkElaps = 0.7;
 public:
     FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, const Creature::CreatureState &state,
-          IGameDataProvider *gameDataProvider);
+          IGameDataProvider *gameDataProvider, IMovesHolder *movesHolder);
     virtual ~FlyAI();
 public:
     bool isMoving() const;
@@ -72,6 +73,7 @@ private:
     QPointF m_takeOffPt;
 
     double m_dt;
+    IMovesHolder *m_movesHolder;
 };
 
 }

@@ -48,7 +48,3 @@
 
 
 
-===============================================
-
-* show statistics on stop
-* dynamic field resize

@@ -52,6 +52,7 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
     m_knownCommands.insert(CommandType::CtGameState);
     m_knownCommands.insert(CommandType::CtGameData);
     m_knownCommands.insert(CommandType::CtGameConfig);
+    m_knownCommands.insert(CommandType::CtGameStats);
 
     QButtonGroup *group = new QButtonGroup(this);
     group->addButton(ui->fastBtn);
@@ -97,6 +98,9 @@ bool MainWindow::handleCommand(proto::CommandType ctype, const proto::CommandDat
     case CommandType::CtGameConfig:
         onConfig(data);
         break;
+    case CommandType::CtGameStats:
+        onStats(data);
+        break;
     default:
         return false;
     }
@@ -118,6 +122,7 @@ void MainWindow::onGameState(const proto::CommandData &data)
     else
     {
         ui->m_startStopBtn->setText("start");
+        getStats();
     }
 }
 
@@ -216,5 +221,23 @@ void MainWindow::onSpotCapacityChange()
     m_protoMedia->postCommand(CommandType::CtChangeConfig, data);
 }
 
+void MainWindow::getStats()
+{
+    m_protoMedia->postCommand(CommandType::CtGetStats);
+}
+
+void MainWindow::onStats(const proto::CommandData &data)
+{
+    int count = data.at(0).toInt();
+    for (int i = 0; i < count; ++i)
+    {
+        QUuid uid = data.at(1 + i * 4).toUuid();
+        double averageVel = data.at(1 + i * 4 + 1).toDouble();
+        double mileage = data.at(1 + i * 4 + 2).toDouble();
+        bool isDead = data.at(1 + i * 4 + 3).toBool();
+
+        qDebug() << uid << ": " << averageVel << " & " << mileage << " & " << isDead;
+    }
+}
 
 }

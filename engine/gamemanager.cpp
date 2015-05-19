@@ -35,6 +35,7 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     m_knownCommands.insert(CommandType::CtAddCreature);
     m_knownCommands.insert(CommandType::CtGetConfig);
     m_knownCommands.insert(CommandType::CtChangeConfig);
+    m_knownCommands.insert(CommandType::CtGetStats);
 
     reinitField();
 
@@ -77,6 +78,9 @@ bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
         break;
     case CommandType::CtChangeConfig:
         onChangeConfig(data);
+        break;
+    case CommandType::CtGetStats:
+        onGetStats();
         break;
     default:
         return false;
@@ -466,6 +470,22 @@ void GameManager::stopGame()
 {
     m_status = GameStatus::GsStopped;
     m_shouldExit = true;
+}
+
+void GameManager::onGetStats() const
+{
+    QMutexLocker locker(&m_creatureMutex);
+    CommandData data;
+    data.reserve(m_creatures.count() * 4 + 1);
+    data.append(QVariant(m_creatures.count()));
+    for (auto creature: m_creatures)
+    {
+        data.append(creature->getUid());
+        data.append(creature->getAverageVelocity());
+        data.append(creature->getMileage());
+        data.append(bool(creature->getState() == 100));
+    }
+    m_protoMedia->postCommand(CommandType::CtGameStats, data);
 }
 
 }

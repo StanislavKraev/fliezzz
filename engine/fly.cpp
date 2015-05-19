@@ -43,7 +43,7 @@ QString Fly::getType() const
 
 void Fly::run()
 {
-    m_ai = new FlyAI(m_maxAge, m_maxVel, m_maxAlt, m_maxThinkTime, m_state, m_gameDataProvider);
+    m_ai = new FlyAI(m_maxAge, m_maxVel, m_maxAlt, m_maxThinkTime, m_state, m_gameDataProvider, this);
     m_ai->init();
 
     connect(this, SIGNAL(advanceAI(double)),
@@ -80,5 +80,6 @@ double Fly::getMaxThinkTime() const
 {
     return m_maxThinkTime;
 }
+
 
 }

@@ -19,7 +19,7 @@ namespace engine
 {
 
 FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, const Creature::CreatureState &state,
-             IGameDataProvider *gameDataProvider):
+             IGameDataProvider *gameDataProvider, IMovesHolder *movesHolder):
     CreatureAI(maxAge, maxVelocity, maxAlt, state),
     m_fsm(nullptr),
     m_thinkingState(nullptr),
@@ -35,7 +35,8 @@ FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTi
     m_choosenMove(MoveDirection::MdUnknown),
     m_targetSpot(0, 0),
     m_targetSpotPart(0., 0.),
-    m_dt(0.)
+    m_dt(0.),
+    m_movesHolder(movesHolder)
 {
 }
 
@@ -259,6 +260,7 @@ void FlyAI::advanceLanding()
 
         //qDebug() << "landing: " << m_state.m_transPos;
         emit landed();
+        m_movesHolder->addMove(m_flyingDuration, m_state.m_vel);
         return;
     }
 
@@ -301,6 +303,7 @@ void FlyAI::advanceFalling()
 
     if (m_state.m_vel <= 0.)
     {
+        m_movesHolder->addMove(m_flyingDuration, m_state.m_vel);
         emit stopped();
     }
 

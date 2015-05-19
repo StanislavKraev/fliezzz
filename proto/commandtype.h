@@ -10,6 +10,7 @@ enum CommandType
     CtStopGame = 2,
     CtChangeConfig = 3,
     CtGetConfig = 4,
+    CtGetStats = 5,
 
     CtAddCreature = 10,
 
@@ -20,6 +21,7 @@ enum CommandType
     CtGameState = 130,
     CtGameData = 131,
     CtGameConfig = 132,
+    CtGameStats = 133,
 
     CtLast
 };

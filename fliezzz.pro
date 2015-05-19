@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     engine/trianglespotpart.cpp \
     ui/graphicsview.cpp \
     ui/flygraphicsitem.cpp \
-    ui/graphicsitem.cpp
+    ui/graphicsitem.cpp \
+    engine/imovesholder.cpp
 
 HEADERS  += mainwindow.h \
     engine/creature.h \
@@ -55,7 +56,8 @@ HEADERS  += mainwindow.h \
     engine/trianglespotpart.h \
     ui/graphicsview.h \
     ui/flygraphicsitem.h \
-    ui/graphicsitem.h
+    ui/graphicsitem.h \
+    engine/imovesholder.h
 
 FORMS    += ui/mainwindow.ui
 
