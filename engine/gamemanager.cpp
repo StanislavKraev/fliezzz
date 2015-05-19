@@ -41,6 +41,17 @@ GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
 
 GameManager::~GameManager()
 {
+    m_shouldExit = true;
+    m_status = GameStatus::GsStopped;
+    QMutexLocker locker(&m_creatureMutex);
+    for (auto creature: m_creatures)
+    {
+        delete creature;
+    }
+    for (auto spot: m_field)
+    {
+        delete spot;
+    }
 }
 
 bool GameManager::handleCommand(CommandType ctype, const CommandData &data)
@@ -113,6 +124,11 @@ void GameManager::run()
         m_protoMedia->canProcess(this, m_knownCommands);
         m_startTime = curTime;
         msleep(GameManager::CycleDelay);
+    }
+
+    for (auto creature: m_creatures)
+    {
+        creature->stopAI();
     }
 }
 
@@ -397,6 +413,12 @@ void GameManager::reinitField()
     {
         m_field[i] = new LandingSpot(i % m_fieldSize, i / m_fieldSize, cellSize, m_pointCapacity);
     }
+}
+
+void GameManager::stopGame()
+{
+    m_status = GameStatus::GsStopped;
+    m_shouldExit = true;
 }
 
 }

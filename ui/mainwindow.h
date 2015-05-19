@@ -39,6 +39,7 @@ private:
     void onGameState(const proto::CommandData &data);
     void onGameData(const proto::CommandData &data);
     void drawGrid(unsigned int fieldSize);
+    void closeEvent();
 private:
     Ui::MainWindow *ui;
     proto::IProtoMedia *m_protoMedia;

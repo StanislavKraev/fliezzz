@@ -54,7 +54,7 @@ LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsign
 
 LandingSpot::~LandingSpot()
 {
-    for (unsigned int i = 0; i < m_landingSpots.count(); ++i)
+    for (int i = 0; i < m_landingSpots.count(); ++i)
     {
         delete m_landingSpots[i];
     }
@@ -88,7 +88,7 @@ short LandingSpot::getPartIndexFromPt(const QPointF &pt) const
 
 SpotPart *LandingSpot::getPart(unsigned short index) const
 {
-    return index >= 0 && index <= m_landingSpots.count() ? m_landingSpots[index] : nullptr;
+    return index <= m_landingSpots.count() ? m_landingSpots[index] : nullptr;
 }
 
 }

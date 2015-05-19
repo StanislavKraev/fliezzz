@@ -26,6 +26,7 @@ public:
     virtual ~FlyAI();
 public:
     bool isMoving() const;
+    void stop();
 public:
     virtual void init();
 public slots:

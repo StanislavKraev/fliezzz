@@ -27,6 +27,7 @@ public:
     void run();
     virtual void advance(double dt);
     virtual bool isMoving() const;
+    virtual void stopAI();
 signals:
     void advanceAI(double);
 private:

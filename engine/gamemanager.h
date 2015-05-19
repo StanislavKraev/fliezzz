@@ -34,6 +34,7 @@ protected:
     GameManager& operator=(const GameManager&);
 public:
     void run();
+    void stopGame();
 protected:
     void onStart();
     void onStop();

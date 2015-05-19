@@ -35,6 +35,8 @@ public:
     virtual bool isMoving() const = 0;
     virtual void advance(double dt) = 0;
 
+    virtual void stopAI() = 0;
+
 public:
     QUuid getUid() const;
     QPointF getPosition() const;

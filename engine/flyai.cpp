@@ -317,7 +317,6 @@ void FlyAI::onFlyingEnter()
 
     double dx = m_targetSpotPart.x() - m_takeOffPt.x();
     double dy = m_targetSpotPart.y() - m_takeOffPt.y();
-    double c = sqrt(dx * dx + dy * dy);
 
     m_state.m_angle = atan2(dy, dx);
     qDebug() << "angle: " << 180. / 3.14159265 * m_state.m_angle;
@@ -391,6 +390,14 @@ void FlyAI::changeRoute()
     }
     m_targetSpotPart = *part;
     emit thinkTimeout(); // todo: create correct signal
+}
+
+void FlyAI::stop()
+{
+    if (m_fsm && m_fsm->isRunning())
+    {
+        m_fsm->stop();
+    }
 }
 
 }

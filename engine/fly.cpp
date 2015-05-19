@@ -19,7 +19,11 @@ Fly::Fly(IGameDataProvider *gameDataProvider, const QPoint &startPoint, const QP
 
 Fly::~Fly()
 {
-
+    if (m_ai)
+    {
+        m_ai->deleteLater();
+        m_ai = nullptr;
+    }
 }
 
 QRectF Fly::getBBox() const
@@ -60,6 +64,16 @@ bool Fly::isMoving() const
         return false;
     }
     return m_ai->isMoving();
+}
+
+void Fly::stopAI()
+{
+    if (m_ai)
+    {
+        m_ai->stop();
+    }
+    exit();
+    wait();
 }
 
 }

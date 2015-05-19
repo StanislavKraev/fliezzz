@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
     MainWindow w(&protoMedia);
     w.show();
 
-    // todo: correct threads shutdown
-    return a.exec();
+    int ret = a.exec();
+    gameManager.stopGame();
+    gameManager.wait();
+    return ret;
 }
