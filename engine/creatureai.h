@@ -3,6 +3,10 @@
 
 #include "engine/creature.h"
 
+namespace engine
+{
+
+
 class CreatureAI
 {
 public:
@@ -19,5 +23,7 @@ protected:
     Creature::CreatureState m_state;
     double m_curTime;
 };
+
+}
 
 #endif // CREATUREAI_H

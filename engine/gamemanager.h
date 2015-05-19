@@ -10,15 +10,22 @@
 #include "engine/gamestatus.h"
 #include "proto/iprotonode.h"
 
-class IProtoMedia;
+namespace proto
+{
+    class IProtoMedia;
+}
+
+namespace engine
+{
+
 class Creature;
 class LandingSpot;
 
-class GameManager: public QThread, public IProtoNode, public IGameDataProvider
+class GameManager: public QThread, public proto::IProtoNode, public IGameDataProvider
 {
     Q_OBJECT
 public:
-    GameManager(QObject *parent, IProtoMedia *protoMedia);
+    GameManager(QObject *parent, proto::IProtoMedia *protoMedia);
     virtual ~GameManager();
 public:
     static const int CycleDelay = 100;
@@ -32,10 +39,10 @@ protected:
     void onStop();
     void onGetStatus() const;
     void onChangeConfig();
-    void onAddCreature(const CommandData &data);
+    void onAddCreature(const proto::CommandData &data);
     void getSpotsOccupiedParts(LandingSpot *spot, QSet<unsigned short> &partIds) const;
 protected:
-    virtual bool handleCommand(CommandType ctype, const CommandData &data);
+    virtual bool handleCommand(proto::CommandType ctype, const proto::CommandData &data);
 
     virtual unsigned short getSize() const;
     virtual unsigned short getPointCapacity() const;
@@ -45,16 +52,16 @@ protected:
     virtual QUuid getCreatureAt(const QPointF &pt) const;
     virtual QPoint getPointByDirection(const QPoint &pt, MoveDirection moveDirection) const;
 private:
-    void getGameState(CommandData &data) const;
+    void getGameState(proto::CommandData &data) const;
     void reinitField();
 private:
     QList<Creature*> m_creatures;
-    IProtoMedia *m_protoMedia;
+    proto::IProtoMedia *m_protoMedia;
 
     unsigned short m_fieldSize;
     unsigned short m_pointCapacity;
     double m_maxMoveTime;
-    QSet<CommandType>  m_knownCommands;
+    QSet<proto::CommandType>  m_knownCommands;
 
     GameStatus m_status;
     bool m_shouldExit;
@@ -62,5 +69,7 @@ private:
     double m_startTime;
     mutable QMutex m_creatureMutex;
 };
+
+}
 
 #endif // GAMEMANAGER_H

@@ -7,6 +7,9 @@
 
 #include "engine/creature.h"
 
+namespace engine
+{
+
 class FlyAI;
 
 class IGameDataProvider;
@@ -31,5 +34,7 @@ private:
     double m_maxThinkTime;
     IGameDataProvider *m_gameDataProvider;
 };
+
+}
 
 #endif // FLY_H

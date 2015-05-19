@@ -4,6 +4,9 @@
 
 #include "rectanglespotpart.h"
 
+namespace engine
+{
+
 RectangleSpotPart::RectangleSpotPart(const QRectF &rect, LandingSpot *parent) :
     m_rect(rect), m_parent(parent)
 {
@@ -49,4 +52,6 @@ bool RectangleSpotPart::contains(const QPointF &pt) const
 void RectangleSpotPart::tostring() const
 {
     qDebug() << "rect spot part";
+}
+
 }

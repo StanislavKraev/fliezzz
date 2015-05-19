@@ -9,6 +9,10 @@
 
 #include "engine/movedirection.h"
 
+namespace engine
+{
+
+
 class IGameDataProvider
 {
 public:
@@ -25,5 +29,7 @@ protected:
 private:
     IGameDataProvider(const IGameDataProvider&);
 };
+
+}
 
 #endif // IGAMEDATAPROVIDER_H

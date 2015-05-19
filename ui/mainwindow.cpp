@@ -9,6 +9,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+using namespace proto;
+using namespace engine;
+
+namespace ui
+{
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -25,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-MainWindow::MainWindow(IProtoMedia *protoMedia): QMainWindow(nullptr),
+MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
     ui(new Ui::MainWindow),
     m_protoMedia(protoMedia),
     m_gameStatus(GameStatus::GsStopped)
@@ -63,7 +69,7 @@ void MainWindow::onStartStop()
     m_protoMedia->postCommand(CommandType::CtGetGameState);
 }
 
-bool MainWindow::handleCommand(CommandType ctype, const CommandData &data)
+bool MainWindow::handleCommand(proto::CommandType ctype, const proto::CommandData &data)
 {
     switch (ctype)
     {
@@ -84,7 +90,7 @@ void MainWindow::tick()
     m_protoMedia->canProcess(this, m_knownCommands);
 }
 
-void MainWindow::onGameState(const CommandData &data)
+void MainWindow::onGameState(const proto::CommandData &data)
 {
     m_gameStatus = static_cast<GameStatus>(data[0].toInt());
     if (m_gameStatus == GameStatus::GsStarted)
@@ -97,7 +103,7 @@ void MainWindow::onGameState(const CommandData &data)
     }
 }
 
-void MainWindow::onGameData(const CommandData &data)
+void MainWindow::onGameData(const proto::CommandData &data)
 {
     if (data[0] != 2)
     {
@@ -119,10 +125,10 @@ void MainWindow::onGameData(const CommandData &data)
     drawGrid(fieldSize);
     for (unsigned int creatureIndex = 0; creatureIndex < creaturesCount; ++creatureIndex)
     {
-        QUuid uid = data[4 + creatureIndex * 5].toUuid();
-        QString type = data[4 + creatureIndex * 5 + 1].toString();
+//        QUuid uid = data[4 + creatureIndex * 5].toUuid();
+//        QString type = data[4 + creatureIndex * 5 + 1].toString();
         QPointF pos = data[4 + creatureIndex * 5 + 2].toPointF();
-        int state = data[4 + creatureIndex * 5 + 3].toInt();
+//        int state = data[4 + creatureIndex * 5 + 3].toInt();
         double angle = data[4 + creatureIndex * 5 + 4].toDouble();
 
         QTransform transform;
@@ -157,4 +163,6 @@ void MainWindow::onAddFly1()
     data.append(QVariant(0.01));
     data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 3.));
     m_protoMedia->postCommand(CommandType::CtAddCreature, data);
+}
+
 }

@@ -4,6 +4,10 @@
 #include "engine/gamemanager.h"
 #include "ui/mainwindow.h"
 
+using namespace proto;
+using namespace engine;
+using namespace ui;
+
 int main(int argc, char *argv[])
 {
     ProtoMedia protoMedia;

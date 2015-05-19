@@ -6,6 +6,9 @@
 
 #include "proto/iprotomedia.h"
 
+namespace proto
+{
+
 class ProtoMedia: public IProtoMedia
 {
     static const unsigned short MaxQueueSize = 10;
@@ -22,5 +25,7 @@ private:
     QList< CmdDataPair > m_queue;
     QMutex m_mutex;
 };
+
+}
 
 #endif // PROTOMEDIA_H

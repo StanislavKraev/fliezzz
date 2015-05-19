@@ -3,6 +3,9 @@
 
 #include "spotpart.h"
 
+namespace engine
+{
+
 class RectangleSpotPart: public SpotPart
 {
 public:
@@ -21,5 +24,7 @@ private:
     QRectF m_rect;
     LandingSpot *m_parent;
 };
+
+}
 
 #endif // RECTANGLESPOTPART_H

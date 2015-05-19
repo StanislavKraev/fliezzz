@@ -4,6 +4,9 @@
 
 #include "creature.h"
 
+namespace engine
+{
+
 Creature::Creature(const QPoint &startPoint, const QPointF &startPointF,
                    double maxAge, double maxVelocity, double maxAlt):
     m_state(startPoint, startPointF, 0., 0., 0., 0., 0.),
@@ -67,5 +70,7 @@ Creature::CreatureState& Creature::CreatureState::operator=(const Creature::Crea
     m_age = right.m_age;
     m_mileage = right.m_mileage;
     return *this;
+}
+
 }
 

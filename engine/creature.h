@@ -4,6 +4,9 @@
 #include <QRect>
 #include <QUuid>
 
+namespace engine
+{
+
 class Creature
 {   
 public:
@@ -46,5 +49,7 @@ protected:
     bool m_shouldStop;
     double m_time;
 };
+
+}
 
 #endif // CREATURE_H

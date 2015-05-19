@@ -4,7 +4,10 @@
 #include <QVector>
 #include <QVariant>
 
-typedef QVector<QVariant> CommandData;
+namespace proto
+{
+    typedef QVector<QVariant> CommandData;
+}
 
 #endif // COMMANDDATA
 

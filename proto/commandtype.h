@@ -1,6 +1,9 @@
 #ifndef COMMANDTYPE
 #define COMMANDTYPE
 
+namespace proto
+{
+
 enum CommandType
 {
     CtStartGame = 1,
@@ -18,6 +21,8 @@ enum CommandType
 
     CtLast
 };
+
+}
 
 #endif // COMMANDTYPE
 

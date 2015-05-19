@@ -4,6 +4,10 @@
 #include <QRect>
 #include <QVector>
 
+namespace engine
+{
+
+
 class SpotPart;
 
 class LandingSpot
@@ -22,5 +26,7 @@ private:
     unsigned int m_y;
     QRectF m_bbox;
 };
+
+}
 
 #endif // LANDINGSPOT_H

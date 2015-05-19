@@ -1,6 +1,9 @@
 #ifndef MOVEDIRECTION
 #define MOVEDIRECTION
 
+namespace engine
+{
+
 enum MoveDirection {
     MdNorth,
     MdNorthEast,
@@ -12,6 +15,8 @@ enum MoveDirection {
     MdNorthWest,
     MdUnknown
 };
+
+}
 
 #endif // MOVEDIRECTION
 

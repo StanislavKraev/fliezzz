@@ -12,6 +12,11 @@
 #include "engine/spotpart.h"
 #include "engine/gamemanager.h"
 
+using namespace proto;
+
+namespace engine
+{
+
 GameManager::GameManager(QObject *parent, IProtoMedia *protoMedia):
     QThread(parent),
     m_protoMedia(protoMedia),
@@ -378,4 +383,6 @@ void GameManager::reinitField()
     {
         m_field[i] = new LandingSpot(i % m_fieldSize, i / m_fieldSize, cellSize, m_pointCapacity);
     }
+}
+
 }

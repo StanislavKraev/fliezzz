@@ -3,6 +3,9 @@
 
 #include "landingspot.h"
 
+namespace engine
+{
+
 LandingSpot::LandingSpot(unsigned int x, unsigned int y, double spotSize, unsigned short spotCapacity) :
     m_x(x), m_y(y)
 {
@@ -86,4 +89,6 @@ short LandingSpot::getPartIndexFromPt(const QPointF &pt) const
 SpotPart *LandingSpot::getPart(unsigned short index) const
 {
     return index >= 0 && index <= m_landingSpots.count() ? m_landingSpots[index] : nullptr;
+}
+
 }

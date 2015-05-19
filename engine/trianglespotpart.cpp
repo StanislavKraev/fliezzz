@@ -3,6 +3,9 @@
 
 #include "trianglespotpart.h"
 
+namespace engine
+{
+
 TriangleSpotPart::TriangleSpotPart(const QPointF &a, const QPointF &b, const QPointF &c, LandingSpot *parent):
     m_a(a), m_b(b), m_c(c), m_parent(parent)
 {
@@ -79,4 +82,6 @@ bool TriangleSpotPart::contains(const QPointF &pt) const
 void TriangleSpotPart::tostring() const
 {
     qDebug() << "tri spot part: " << m_a << " " << m_b << " " << m_c;
+}
+
 }

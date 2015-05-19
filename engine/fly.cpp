@@ -4,6 +4,9 @@
 
 #include "fly.h"
 
+namespace engine
+{
+
 Fly::Fly(IGameDataProvider *gameDataProvider, const QPoint &startPoint, const QPointF &startPointF,
          double maxAge, double maxVelocity, double maxAlt, double maxThinkTime):
     Creature(startPoint, startPointF, maxAge, maxVelocity, maxAlt),
@@ -59,4 +62,6 @@ bool Fly::isMoving() const
         return false;
     }
     return m_ai->isMoving();
+}
+
 }

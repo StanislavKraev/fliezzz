@@ -4,6 +4,9 @@
 
 #include "protomedia.h"
 
+namespace proto
+{
+
 ProtoMedia::ProtoMedia()
 {
 
@@ -66,4 +69,6 @@ void ProtoMedia::canProcess(IProtoNode *protoNode, const QSet<CommandType> &supp
         }
     }
     m_mutex.unlock();
+}
+
 }

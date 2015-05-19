@@ -9,6 +9,10 @@
 class QStateMachine;
 class QState;
 class QFinalState;
+
+namespace engine
+{
+
 class IGameDataProvider;
 
 class FlyAI: public QObject, public CreatureAI
@@ -67,5 +71,7 @@ private:
 
     double m_dt;
 };
+
+}
 
 #endif // FLYAI_H

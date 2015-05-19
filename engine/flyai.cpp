@@ -15,6 +15,9 @@ double frand(double from = 0., double to = 1.)
     return from + f * (to - from);
 }
 
+namespace engine
+{
+
 FlyAI::FlyAI(double maxAge, double maxVelocity, double maxAlt, double maxThinkTime, const Creature::CreatureState &state,
              IGameDataProvider *gameDataProvider):
     CreatureAI(maxAge, maxVelocity, maxAlt, state),
@@ -399,4 +402,6 @@ void FlyAI::changeRoute()
     }
     m_targetSpotPart = *part;
     emit thinkTimeout(); // todo: create correct signal
+}
+
 }

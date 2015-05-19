@@ -5,6 +5,9 @@
 #include <QRectF>
 #include <QList>
 
+namespace engine
+{
+
 class LandingSpot;
 
 class SpotPart
@@ -24,5 +27,7 @@ public:
 
     virtual void tostring() const = 0;
 };
+
+}
 
 #endif // SPOTPART_H

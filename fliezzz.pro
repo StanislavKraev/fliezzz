@@ -17,7 +17,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
     engine/creature.cpp \
     engine/creatureai.cpp \
-    engine/field.cpp \
     engine/gamemanager.cpp \
     proto/protomedia.cpp \
     ui/mainwindow.cpp \
@@ -34,7 +33,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     engine/creature.h \
     engine/creatureai.h \
-    engine/field.h \
     engine/gamemanager.h \
     proto/protomedia.h \
     ui/mainwindow.h \

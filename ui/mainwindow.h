@@ -8,37 +8,46 @@
 #include "proto/iprotonode.h"
 #include "engine/gamestatus.h"
 
-class IProtoMedia;
-
-namespace Ui {
-class MainWindow;
+namespace proto
+{
+    class IProtoMedia;
 }
 
-class MainWindow : public QMainWindow, public IProtoNode
+namespace Ui
+{
+    class MainWindow;
+}
+
+namespace ui
+{
+
+class MainWindow : public QMainWindow, public proto::IProtoNode
 {
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    MainWindow(IProtoMedia *protoMedia);
+    MainWindow(proto::IProtoMedia *protoMedia);
     virtual ~MainWindow();
 public:
-    virtual bool handleCommand(CommandType ctype, const CommandData &data);
+    virtual bool handleCommand(proto::CommandType ctype, const proto::CommandData &data);
 private slots:
     void onStartStop();
     void tick();
     void onAddFly1();
 private:
-    void onGameState(const CommandData &data);
-    void onGameData(const CommandData &data);
+    void onGameState(const proto::CommandData &data);
+    void onGameData(const proto::CommandData &data);
     void drawGrid(unsigned int fieldSize);
 private:
     Ui::MainWindow *ui;
-    IProtoMedia *m_protoMedia;
+    proto::IProtoMedia *m_protoMedia;
     QTimer *m_timer;
-    QSet<CommandType> m_knownCommands;
+    QSet<proto::CommandType> m_knownCommands;
 
-    GameStatus m_gameStatus;
+    engine::GameStatus m_gameStatus;
 };
+
+}
 
 #endif // MAINWINDOW_H

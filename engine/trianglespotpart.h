@@ -5,6 +5,9 @@
 
 #include <engine/spotpart.h>
 
+namespace engine
+{
+
 class TriangleSpotPart: public SpotPart
 {
 public:
@@ -26,5 +29,7 @@ private:
     LandingSpot *m_parent;
     QPolygonF m_poly;
 };
+
+}
 
 #endif // TRIANGLESPOTPART_H
