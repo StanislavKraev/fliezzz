@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QSet>
+#include <QPoint>
 
 #include "proto/iprotonode.h"
 #include "engine/gamestatus.h"
@@ -35,11 +36,12 @@ private slots:
     void onStartStop();
     void tick();
     void onAddFly1();
+    void onCellClick(const QPoint &pt);
 private:
     void onGameState(const proto::CommandData &data);
     void onGameData(const proto::CommandData &data);
-    void drawGrid(unsigned int fieldSize);
     void closeEvent();
+    void addFly(const QPoint &pt);
 private:
     Ui::MainWindow *ui;
     proto::IProtoMedia *m_protoMedia;

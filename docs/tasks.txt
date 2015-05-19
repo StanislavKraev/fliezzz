@@ -52,7 +52,5 @@
 
 * do not recreate graphicitems every tick. just once. then move, rotate, add new, delete missing
 * the fly params visualize
-* add fly by click on cell
 * show statistics on stop
-
-* some tests
+* dynamic field resize
