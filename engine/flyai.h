@@ -46,6 +46,7 @@ private slots:
     void onLandingEnter();
 private:
     void changeRoute();
+    double angleFromDirection(MoveDirection dir) const;
 signals:
     void maxAgeReached();
     void maxFlyingDistanceReached();

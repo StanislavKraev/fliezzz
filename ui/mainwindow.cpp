@@ -3,6 +3,9 @@
 #include <QTransform>
 #include <QUuid>
 #include <QGraphicsPixmapItem>
+#include <QDialog>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
 
 #include "proto/iprotomedia.h"
 
@@ -39,6 +42,7 @@ MainWindow::MainWindow(proto::IProtoMedia *protoMedia): QMainWindow(nullptr),
 {
     ui->setupUi(this);
     setFixedSize(650, 505);
+    move(50, 50);
     ui->m_graphicsView->setRenderHint(QPainter::Antialiasing);
 
     QGraphicsScene *scene = new QGraphicsScene(this);
@@ -166,8 +170,6 @@ void MainWindow::onGameData(const proto::CommandData &data)
             item->update(movePt, 90 + angle * 180. / 3.14159265, state);
 
         }
-
-        // todo: remove obsolete items from scene
     }
 }
 
@@ -229,6 +231,15 @@ void MainWindow::getStats()
 void MainWindow::onStats(const proto::CommandData &data)
 {
     int count = data.at(0).toInt();
+    if (!count)
+    {
+        return;
+    }
+    QDialog *newDialog = new QDialog(this);
+    newDialog->setLayout(new QVBoxLayout());
+    QPlainTextEdit *edit = new QPlainTextEdit(newDialog);
+    newDialog->layout()->addWidget(edit);
+    QString text;
     for (int i = 0; i < count; ++i)
     {
         QUuid uid = data.at(1 + i * 4).toUuid();
@@ -237,7 +248,13 @@ void MainWindow::onStats(const proto::CommandData &data)
         bool isDead = data.at(1 + i * 4 + 3).toBool();
 
         qDebug() << uid << ": " << averageVel << " & " << mileage << " & " << isDead;
+        text += QString::number(i + 1) + ": v=" + QString::number(averageVel) + "; s=" + QString::number(mileage) + (isDead ? "; dead" : "; alive") + "<br/>";
     }
+    edit->document()->setHtml(text);
+    newDialog->show();
+    newDialog->resize(400, 600);
+    newDialog->setFixedSize(400, 600);
+    newDialog->exec();
 }
 
 }

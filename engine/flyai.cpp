@@ -124,7 +124,7 @@ void FlyAI::advanceThinking()
     if (moveDirections.empty())
     {
         m_choosenMove = MoveDirection::MdUnknown;
-        qDebug() << "No move directions. Waiting";
+        //qDebug() << "No move directions. Waiting";
         return;
     }
 
@@ -132,7 +132,7 @@ void FlyAI::advanceThinking()
     bool timeIsElapsed = m_thinkingTime >= m_maxThinkTime * FlyAI::MinThinkElaps;
     bool maxTimeIsElapsed = m_thinkingTime >= m_maxThinkTime;
 
-    if (m_choosenMove == MoveDirection::MdUnknown || !moveDirections.contains(m_choosenMove))
+    if (m_choosenMove == MoveDirection::MdUnknown || !moveDirections.contains(m_choosenMove) || frand() > 0.95)
     {
         int choosenIndex = int(frand() * (double)(moveDirections.count()));
         auto dirIt = moveDirections.begin();
@@ -144,7 +144,7 @@ void FlyAI::advanceThinking()
         m_choosenMove = *dirIt;
     }
 
-    // todo: set angle
+    m_state.m_angle = angleFromDirection(m_choosenMove);
 
     if (timeIsElapsed)
     {
@@ -410,6 +410,33 @@ int FlyAI::getSimpleState() const
         return 100;
     }
     return 0;
+}
+
+double FlyAI::angleFromDirection(MoveDirection dir) const
+{
+    const double PI = 3.14159265359;
+    switch (dir)
+    {
+    case MoveDirection::MdNorth:
+        return PI / 2.;
+    case MoveDirection::MdNorthEast:
+        return PI / 4.;
+    case MoveDirection::MdEast:
+        return 0;
+    case MoveDirection::MdSouthEast:
+        return 7. / 4. * PI;
+    case MoveDirection::MdSouth:
+        return 1.5 * PI;
+    case MoveDirection::MdSouthWest:
+        return 1.25 * PI;
+    case MoveDirection::MdWest:
+        return PI;
+    case MoveDirection::MdNorthWest:
+        return 3. / 4. * PI;
+    default:
+        return 0;
+    }
+    return 0.;
 }
 
 }

@@ -17,7 +17,7 @@ GraphicsView::~GraphicsView()
 
 }
 
-void GraphicsView::mousePressEvent(QMouseEvent * mouseEvent)
+void GraphicsView::mousePressEvent(QMouseEvent * )
 {
     //qDebug() << "pressed";
 }
