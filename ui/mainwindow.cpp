@@ -157,7 +157,7 @@ void MainWindow::onAddFly1()
 {
     CommandData data;
     data.append(QVariant("fly"));
-    data.append(QVariant(QPoint(2, 2)));
+    data.append(QVariant(QPoint(0, 4)));
     data.append(QVariant(10. + (double)rand() / RAND_MAX * 40.));
     data.append(QVariant(0.5 + (double)rand() / RAND_MAX * 1.5));
     data.append(QVariant(0.01));

@@ -188,20 +188,20 @@ void GameManager::getMovesFromPoint(const QPoint &pt, QSet<MoveDirection> &moveD
     {
         if (getFreeLandingPoint(QPoint(pt.x() - 1, pt.y())))
         {
-            moveDirectionSet.insert(MoveDirection::MdEast);
+            moveDirectionSet.insert(MoveDirection::MdWest);
         }
         if (pt.y() > 0)
         {
             if (getFreeLandingPoint(QPoint(pt.x() - 1, pt.y() - 1)))
             {
-                moveDirectionSet.insert(MoveDirection::MdNorthEast);
+                moveDirectionSet.insert(MoveDirection::MdNorthWest);
             }
         }
         if (pt.y() < m_fieldSize - 1)
         {
             if (getFreeLandingPoint(QPoint(pt.x() - 1, pt.y() + 1)))
             {
-                moveDirectionSet.insert(MoveDirection::MdSouthEast);
+                moveDirectionSet.insert(MoveDirection::MdSouthWest);
             }
         }
     }
@@ -223,20 +223,20 @@ void GameManager::getMovesFromPoint(const QPoint &pt, QSet<MoveDirection> &moveD
     {
         if (getFreeLandingPoint(QPoint(pt.x() + 1, pt.y())))
         {
-            moveDirectionSet.insert(MoveDirection::MdWest);
+            moveDirectionSet.insert(MoveDirection::MdEast);
         }
         if (pt.y() > 0)
         {
             if (getFreeLandingPoint(QPoint(pt.x() + 1, pt.y() - 1)))
             {
-                moveDirectionSet.insert(MoveDirection::MdNorthWest);
+                moveDirectionSet.insert(MoveDirection::MdNorthEast);
             }
         }
         if (pt.y() < m_fieldSize - 1)
         {
             if (getFreeLandingPoint(QPoint(pt.x() + 1, pt.y() + 1)))
             {
-                moveDirectionSet.insert(MoveDirection::MdSouthWest);
+                moveDirectionSet.insert(MoveDirection::MdSouthEast);
             }
         }
     }

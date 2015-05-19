@@ -173,7 +173,7 @@ void FlyAI::advanceThinking()
                 return;
             }
             m_targetSpotPart = *part;
-            qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart;
+            qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart << "(" << m_targetSpot << ")";
             emit(thinkTimeout());
         }
     }
@@ -195,10 +195,9 @@ void FlyAI::advanceThinking()
             return;
         }
         m_targetSpotPart = *part;
-        qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart;
+        qDebug() << "Direction: " << m_choosenMove << " target spot: " << m_targetSpotPart << "(" << m_targetSpot << ")";
         emit(thinkTimeout());
     }
-    //qDebug() << "Think further. " << m_thinkingTime << " pos:" << m_state.m_transPos;
 }
 
 void FlyAI::advanceFlying()
@@ -298,7 +297,7 @@ void FlyAI::advanceFalling()
     double sinA = sin(m_state.m_angle);
 
     double s = m_state.m_vel * dt;
-    m_state.m_transPos = m_takeOffPt + QPointF(s * cosA, s * sinA); // todo: ensure not to exit from the game field
+    m_state.m_transPos = m_state.m_transPos + QPointF(s * cosA, s * sinA); // todo: ensure not to exit from the game field
 
     if (m_state.m_vel <= 0.)
     {
@@ -316,12 +315,12 @@ void FlyAI::onFlyingEnter()
     m_state.m_vel = m_maxVelocity * frand(0.8, 1.);
     m_takeOffPt = m_state.m_transPos;
 
-    double dx = (m_targetSpotPart.x() - m_takeOffPt.x());
-    double dy = (m_targetSpotPart.y() - m_takeOffPt.y());
+    double dx = m_targetSpotPart.x() - m_takeOffPt.x();
+    double dy = m_targetSpotPart.y() - m_takeOffPt.y();
     double c = sqrt(dx * dx + dy * dy);
-    double cosA = dx / c;
 
-    m_state.m_angle = acos(cosA);
+    m_state.m_angle = atan2(dy, dx);
+    qDebug() << "angle: " << 180. / 3.14159265 * m_state.m_angle;
 }
 
 void FlyAI::onFallingEnter()

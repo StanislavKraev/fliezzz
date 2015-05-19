@@ -50,9 +50,7 @@
 
 ===============================================
 
-* pixmap correct rotation
-* sometimes the fly can't move to free neighbour cell
-* sometimes the fly moves from one spot part to another of the same landing spot
+* correct definalization
 * do not recreate graphicitems every tick. just once. then move, rotate, add new, delete missing
 * the fly params visualize
 * add fly by click on cell
