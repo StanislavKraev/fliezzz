@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QGraphicsOpacityEffect>
 
 #include "flygraphicsitem.h"
 
@@ -29,9 +30,16 @@ QGraphicsItem *FlyGraphicsItem::getQGraphicsItem()
     return this;
 }
 
-void FlyGraphicsItem::update(const QPoint &pos, double angle)
+void FlyGraphicsItem::update(const QPoint &pos, double angle, int state)
 {
     setVisible(true);
+    if (state == 100)
+    {
+        QGraphicsOpacityEffect *effect = new QGraphicsOpacityEffect();
+        effect->setOpacity(0.3);
+        setGraphicsEffect(effect);
+        return;
+    }
     double scale = 1.0 / 60. * m_height;
     resetTransform();
     QRectF brc=boundingRect();

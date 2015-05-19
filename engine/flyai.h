@@ -27,6 +27,7 @@ public:
 public:
     bool isMoving() const;
     void stop();
+    int getSimpleState() const;
 public:
     virtual void init();
 public slots:

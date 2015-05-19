@@ -137,7 +137,7 @@ void MainWindow::onGameData(const proto::CommandData &data)
         QUuid uid = data[2 + creatureIndex * 5].toUuid();
 //        QString type = data[2 + creatureIndex * 5 + 1].toString();
         QPointF pos = data[2 + creatureIndex * 5 + 2].toPointF();
-//        int state = data[2 + creatureIndex * 5 + 3].toInt();
+        int state = data[2 + creatureIndex * 5 + 3].toInt();
         double angle = data[2 + creatureIndex * 5 + 4].toDouble();
 
         GraphicsItem *item = ui->m_graphicsView->getItem(uid);
@@ -149,7 +149,7 @@ void MainWindow::onGameData(const proto::CommandData &data)
         {
             QPoint movePt = QPoint(pos.x() * width / (double)ui->m_graphicsView->getFieldSize(),
                                    pos.y() * height / (double)ui->m_graphicsView->getFieldSize());
-            item->update(movePt, 90 + angle * 180. / 3.14159265);
+            item->update(movePt, 90 + angle * 180. / 3.14159265, state);
 
         }
 

@@ -18,7 +18,7 @@ public:
 public:
     virtual QUuid getUid() const;
     virtual QGraphicsItem *getQGraphicsItem();
-    virtual void update(const QPoint &pos, double angle);
+    virtual void update(const QPoint &pos, double angle, int state);
 private:
     QUuid m_flyUid;
     double m_width;

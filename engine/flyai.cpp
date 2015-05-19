@@ -400,4 +400,13 @@ void FlyAI::stop()
     }
 }
 
+int FlyAI::getSimpleState() const
+{
+    if(m_curState == 0)
+    {
+        return 100;
+    }
+    return 0;
+}
+
 }

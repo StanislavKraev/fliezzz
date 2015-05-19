@@ -33,7 +33,7 @@ QRectF Fly::getBBox() const
 
 int Fly::getState() const
 {
-    return 0; // TODO
+    return m_ai->getSimpleState();
 }
 
 QString Fly::getType() const

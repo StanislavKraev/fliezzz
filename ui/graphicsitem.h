@@ -17,7 +17,7 @@ public:
 public:
     virtual QUuid getUid() const = 0;
     virtual QGraphicsItem *getQGraphicsItem() = 0;
-    virtual void update(const QPoint &pos, double angle) = 0;
+    virtual void update(const QPoint &pos, double angle, int state) = 0;
 };
 
 }
