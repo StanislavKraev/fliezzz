@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QMutex>
+#include <QSet>
 
 #include "proto/iprotomedia.h"
 
@@ -23,6 +24,7 @@ public:
     virtual void postCommand(CommandType command);
 private:
     QList< CmdDataPair > m_queue;
+    QSet< CommandType > m_exclusiveCommands;
     QMutex m_mutex;
 };
 

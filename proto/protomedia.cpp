@@ -9,7 +9,7 @@ namespace proto
 
 ProtoMedia::ProtoMedia()
 {
-
+    m_exclusiveCommands.insert(CommandType::CtGameData);
 }
 
 ProtoMedia::~ProtoMedia()
@@ -25,19 +25,19 @@ void ProtoMedia::postCommand(CommandType command)
 void ProtoMedia::postCommand(CommandType command, const CommandData &data)
 {
     m_mutex.lock();
-    m_queue.push_back(CmdDataPair(command, data));
 
-    if (m_queue.count() > ProtoMedia::MaxQueueSize)
+    QMutableListIterator<CmdDataPair> it(m_queue);
+    bool exclusive = m_exclusiveCommands.contains(command);
+    while (it.hasNext())
     {
-        QMutableListIterator<CmdDataPair> it(m_queue);
-        while (it.hasNext() && m_queue.count() > ProtoMedia::MaxQueueSize)
+        const CmdDataPair &pair = it.next();
+        if (((pair.first > CommandType::CtObsoletableCommands) && (m_queue.count() > ProtoMedia::MaxQueueSize)) ||
+                (exclusive && pair.first == command))
         {
-            if (it.next().first > CommandType::CtObsoletableCommands)
-            {
-                it.remove();
-            }
+            it.remove();
         }
     }
+    m_queue.push_back(CmdDataPair(command, data));
 
     if (m_queue.count() > ProtoMedia::MaxQueueSize)
     {

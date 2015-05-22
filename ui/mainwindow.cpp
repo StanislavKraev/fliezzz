@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
+#include <QTime>
 
 #include "proto/iprotomedia.h"
 
@@ -152,6 +153,7 @@ void MainWindow::onGameData(const proto::CommandData &data)
     double flyWidth = width / fieldSize / sqrt(pointCapacity);
     double flyHeight = height / fieldSize / sqrt(pointCapacity);
 
+
     for (unsigned int creatureIndex = 0; creatureIndex < creaturesCount; ++creatureIndex)
     {
         QUuid uid = data[2 + creatureIndex * 6].toUuid();
@@ -178,6 +180,7 @@ void MainWindow::onGameData(const proto::CommandData &data)
 
 void MainWindow::addFly(const QPoint &pt)
 {
+    qDebug() << QTime::currentTime().toString() << " add fly";
     double thinkMultiplier = ui->fastBtn->isChecked() ? 0.5 : (ui->normalBtn->isChecked() ? 2. : 5.);
     double thinkMin = ui->fastBtn->isChecked() ? 0.2 : (ui->normalBtn->isChecked() ? 1. : 3.);
     CommandData data;
